@@ -2,13 +2,18 @@
 <html lang="zh-TW">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+<meta name="apple-mobile-web-app-title" content="Design Your Life"/>
+<meta name="mobile-web-app-capable" content="yes"/>
 <title>Design Your Life</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Caveat:wght@400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
 <style>
 :root{--cream:#faf6ef;--cream2:#f3ede2;--paper:#fffdf9;--ink:#2c2416;--ink2:#5a4e3a;--ink3:#9a8c75;--border:#ddd4c0;--border2:#ccc0a8;--accent:#c4784a;--accent2:#a85e32;--accentbg:#fdf0e8;--r:14px;--shadow:0 2px 16px rgba(44,36,22,0.08);}
 *{box-sizing:border-box;margin:0;padding:0;}
-body{background:var(--cream);color:var(--ink);font-family:'DM Sans',sans-serif;min-height:100vh;max-width:520px;margin:0 auto;padding:0 0 110px;}
+html{overflow-x:hidden;}
+body{background:var(--cream);color:var(--ink);font-family:'DM Sans',sans-serif;min-height:100vh;max-width:520px;margin:0 auto;padding:0 0 110px;overflow-x:hidden;-webkit-overflow-scrolling:touch;}
 body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");opacity:.7;}
 header{background:var(--paper);border-bottom:2px solid var(--border);padding:20px 20px 14px;position:sticky;top:0;z-index:50;box-shadow:0 2px 20px rgba(44,36,22,.06);}
 .header-title{font-family:'Playfair Display',serif;font-size:24px;font-weight:700;letter-spacing:-.5px;color:var(--ink);margin-bottom:1px;}

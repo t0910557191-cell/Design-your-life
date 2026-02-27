@@ -2,7 +2,11 @@
 <html lang="zh-TW">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="收支明細"/>
+<meta name="mobile-web-app-capable" content="yes"/>
 <title>收支明細</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;600;700&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
 <style>
@@ -17,11 +21,13 @@
     --blue: #6a9fcf; --purple: #a07ab0;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { overflow-x: hidden; }
   body {
     background: var(--bg); color: var(--text);
     font-family: 'Noto Serif TC', serif;
     min-height: 100vh; padding: 0 0 100px;
     max-width: 480px; margin: 0 auto;
+    overflow-x: hidden; -webkit-overflow-scrolling: touch;
   }
 
   /* ── Header ── */
