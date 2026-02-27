@@ -1,0 +1,1631 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Design Your Life</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Caveat:wght@400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+:root{--cream:#faf6ef;--cream2:#f3ede2;--paper:#fffdf9;--ink:#2c2416;--ink2:#5a4e3a;--ink3:#9a8c75;--border:#ddd4c0;--border2:#ccc0a8;--accent:#c4784a;--accent2:#a85e32;--accentbg:#fdf0e8;--r:14px;--shadow:0 2px 16px rgba(44,36,22,0.08);}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--cream);color:var(--ink);font-family:'DM Sans',sans-serif;min-height:100vh;max-width:520px;margin:0 auto;padding:0 0 110px;}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");opacity:.7;}
+header{background:var(--paper);border-bottom:2px solid var(--border);padding:20px 20px 14px;position:sticky;top:0;z-index:50;box-shadow:0 2px 20px rgba(44,36,22,.06);}
+.header-title{font-family:'Playfair Display',serif;font-size:24px;font-weight:700;letter-spacing:-.5px;color:var(--ink);margin-bottom:1px;}
+.header-title span{font-style:italic;color:var(--accent);}
+.header-sub{font-family:'Caveat',cursive;font-size:13px;color:var(--ink3);margin-bottom:12px;}
+.tab-bar{display:flex;gap:4px;}
+.tab{flex:1;padding:7px 0;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:500;border:1.5px solid var(--border);border-radius:9px;background:none;color:var(--ink3);cursor:pointer;transition:all .2s;text-align:center;}
+.tab.active{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600;}
+.tab:hover:not(.active){background:var(--cream2);}
+.page{padding:16px 18px;position:relative;z-index:1;}
+.page-section{display:none;}.page-section.active{display:block;}
+.sec-title{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--ink);margin-bottom:3px;}
+.sec-sub{font-family:'Caveat',cursive;font-size:13px;color:var(--ink3);margin-bottom:12px;}
+.card{background:var(--paper);border:1.5px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:12px;box-shadow:var(--shadow);}
+.mnav{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.mnav-btn{background:var(--cream2);border:1.5px solid var(--border);border-radius:9px;color:var(--accent);font-size:17px;line-height:1;padding:5px 12px;cursor:pointer;transition:background .2s;}
+.mnav-btn:hover{background:var(--accentbg);}
+.mnav-label{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;}
+.add-form{background:var(--accentbg);border:1.5px dashed var(--accent);border-radius:var(--r);padding:14px;margin-bottom:12px;display:none;}
+.add-form.open{display:block;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;}
+.form-input,.form-select{background:var(--paper);border:1.5px solid var(--border);border-radius:9px;color:var(--ink);font-family:'DM Sans',sans-serif;font-size:13px;padding:8px 11px;outline:none;width:100%;transition:border-color .2s;}
+.form-input:focus,.form-select:focus{border-color:var(--accent);}
+.form-full{margin-bottom:8px;width:100%;}
+.form-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:8px;}
+.btn-cancel{background:none;border:1.5px solid var(--border);border-radius:9px;color:var(--ink3);font-family:'DM Sans',sans-serif;font-size:13px;padding:7px 13px;cursor:pointer;}
+.btn-save{background:var(--accent);border:none;border-radius:9px;color:#fff;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;padding:7px 16px;cursor:pointer;transition:background .2s;}
+.btn-save:hover{background:var(--accent2);}
+.cat-filter{display:flex;gap:5px;overflow-x:auto;margin-bottom:10px;padding-bottom:3px;scrollbar-width:none;}
+.cat-filter::-webkit-scrollbar{display:none;}
+.cat-pill{flex-shrink:0;padding:5px 11px;border-radius:20px;border:1.5px solid var(--border);background:none;color:var(--ink3);font-family:'DM Sans',sans-serif;font-size:11px;font-weight:500;cursor:pointer;transition:all .2s;white-space:nowrap;}
+.add-row{margin-bottom:12px;}
+.add-main-btn{width:100%;background:var(--accent);border:none;border-radius:11px;color:#fff;font-family:'Playfair Display',serif;font-size:14px;font-weight:700;padding:10px;cursor:pointer;transition:background .2s;}
+.add-main-btn:hover{background:var(--accent2);}
+.no-items{text-align:center;padding:24px 16px;color:var(--ink3);font-family:'Caveat',cursive;font-size:15px;border:1.5px dashed var(--border);border-radius:14px;background:var(--paper);}
+/* Inline edit */
+.edit-btn{background:none;border:none;color:var(--ink3);font-size:13px;cursor:pointer;padding:2px 5px;flex-shrink:0;transition:color .2s;}
+.edit-btn:hover{color:var(--accent);}
+.inline-edit{background:var(--accentbg);border:1.5px solid var(--accent);border-radius:12px;padding:12px 13px;margin-bottom:8px;animation:popIn .2s ease;}
+.ie-row{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:7px;}
+.ie-input,.ie-select{background:var(--paper);border:1.5px solid var(--border);border-radius:8px;color:var(--ink);font-family:'DM Sans',sans-serif;font-size:12px;padding:6px 9px;outline:none;width:100%;transition:border-color .2s;}
+.ie-input:focus,.ie-select:focus{border-color:var(--accent);}
+.ie-actions{display:flex;gap:7px;justify-content:flex-end;margin-top:8px;}
+.ie-save{background:var(--accent);border:none;border-radius:8px;color:#fff;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;padding:6px 14px;cursor:pointer;}
+.ie-cancel{background:none;border:1.5px solid var(--border);border-radius:8px;color:var(--ink3);font-family:'DM Sans',sans-serif;font-size:12px;padding:6px 11px;cursor:pointer;}
+/* Category group header */
+.cat-group-hdr{display:flex;align-items:center;gap:8px;margin:12px 0 7px;}
+.cat-group-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.cat-group-name{font-family:'Playfair Display',serif;font-size:13px;font-weight:700;color:var(--ink2);}
+.cat-group-count{font-family:'Caveat',cursive;font-size:12px;color:var(--ink3);}
+/* Sort row */
+.sort-row{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
+.sort-label{font-family:'Caveat',cursive;font-size:13px;color:var(--ink3);flex-shrink:0;}
+.sort-select{flex:1;background:var(--paper);border:1.5px solid var(--border);border-radius:9px;color:var(--ink2);font-family:'DM Sans',sans-serif;font-size:12px;padding:6px 10px;outline:none;cursor:pointer;}
+.sort-select:focus{border-color:var(--accent);}
+/* Section divider */
+.list-hdr{display:flex;align-items:center;gap:10px;margin:14px 0 10px;}
+.list-hdr-line{flex:1;height:1.5px;background:var(--border);}
+.list-hdr-label{font-family:'Caveat',cursive;font-size:14px;font-weight:600;color:var(--ink3);white-space:nowrap;padding:0 4px;}
+/* Todo items */
+.todo-list{display:flex;flex-direction:column;gap:7px;}
+.todo-item{background:var(--paper);border:1.5px solid var(--border);border-radius:12px;padding:11px 13px;display:flex;align-items:flex-start;gap:10px;animation:popIn .2s ease;}
+@keyframes popIn{from{opacity:0;transform:translateY(-3px) scale(.98);}to{opacity:1;transform:translateY(0) scale(1);}}
+.todo-check{width:20px;height:20px;border-radius:50%;border:2px solid var(--border2);flex-shrink:0;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;margin-top:1px;font-size:11px;}
+.todo-check.checked{background:var(--accent);border-color:var(--accent);color:#fff;}
+.todo-body{flex:1;min-width:0;}
+.todo-title{font-size:13px;font-weight:500;margin-bottom:3px;}
+.todo-meta{display:flex;align-items:center;gap:5px;flex-wrap:wrap;}
+.cat-badge{font-size:10px;font-weight:600;padding:2px 7px;border-radius:10px;color:#fff;}
+.prio-badge{font-size:10px;padding:2px 6px;border-radius:6px;font-weight:600;}
+.prio-high{background:#fde8e8;color:#c04040;}.prio-mid{background:#fef3e2;color:#b07020;}.prio-low{background:#eaf4ee;color:#407040;}
+.meta-txt{font-family:'Caveat',cursive;font-size:12px;color:var(--ink3);}
+.item-del{background:none;border:none;color:var(--ink3);font-size:12px;cursor:pointer;padding:2px 5px;flex-shrink:0;}
+.item-del:hover{color:#e05050;}
+/* Achievement wall */
+.achieve-list{display:flex;flex-direction:column;gap:7px;}
+.achieve-item{background:linear-gradient(135deg,var(--paper) 0%,#fdf6ec 100%);border:1.5px solid var(--border);border-left:4px solid var(--accent);border-radius:12px;padding:11px 13px;display:flex;align-items:center;gap:10px;animation:popIn .3s ease;}
+.achieve-emoji{font-size:22px;flex-shrink:0;}
+.achieve-body{flex:1;min-width:0;}
+.achieve-title{font-size:13px;font-weight:600;margin-bottom:2px;}
+.achieve-meta{display:flex;align-items:center;gap:5px;flex-wrap:wrap;}
+.achieve-undo{background:none;border:none;color:var(--ink3);font-size:13px;cursor:pointer;padding:2px 6px;flex-shrink:0;}
+.achieve-undo:hover{color:var(--accent);}
+/* Yearly goal items */
+.yg-item{background:var(--paper);border:1.5px solid var(--border);border-radius:12px;padding:12px 14px;margin-bottom:8px;animation:popIn .2s ease;}
+.yg-top{display:flex;align-items:flex-start;gap:10px;margin-bottom:8px;}
+.yg-check{width:22px;height:22px;border-radius:50%;border:2px solid var(--border2);flex-shrink:0;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;font-size:12px;margin-top:1px;}
+.yg-check.checked{background:var(--accent);border-color:var(--accent);color:#fff;}
+.yg-body{flex:1;min-width:0;}
+.yg-title{font-size:13px;font-weight:600;margin-bottom:3px;}
+.yg-meta{display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin-bottom:6px;}
+.yg-prog-row{display:flex;align-items:center;gap:8px;}
+.yg-track{flex:1;height:8px;background:var(--cream2);border-radius:4px;overflow:hidden;cursor:grab;user-select:none;}
+.yg-track:active{cursor:grabbing;}
+.yg-fill{height:100%;border-radius:4px;transition:width .1s ease;pointer-events:none;}
+/* Todo progress bar */
+.todo-prog-row{display:flex;align-items:center;gap:7px;margin-top:7px;}
+.todo-prog-track{flex:1;height:6px;background:var(--cream2);border-radius:3px;overflow:hidden;cursor:grab;user-select:none;}
+.todo-prog-track:active{cursor:grabbing;}
+.todo-prog-fill{height:100%;border-radius:3px;transition:width .1s ease;pointer-events:none;}
+.prog-pct-label{font-family:'Caveat',cursive;font-size:12px;color:var(--ink3);width:32px;text-align:right;flex-shrink:0;}/* Diary */
+.diary-photo-main{width:100%;max-height:260px;object-fit:cover;display:block;}
+.diary-photo-thumbs{display:flex;gap:6px;flex-wrap:wrap;padding:8px 14px 6px;}
+.diary-thumb-wrap{position:relative;}
+.diary-thumb{width:70px;height:70px;object-fit:cover;border-radius:8px;border:2px solid var(--border);cursor:pointer;}
+.diary-thumb.active{border-color:var(--accent);}
+.img-del{position:absolute;top:-5px;right:-5px;background:#e05050;border:none;color:#fff;width:17px;height:17px;border-radius:50%;font-size:9px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.upload-area{border:2px dashed var(--border2);border-radius:12px;padding:14px;cursor:pointer;transition:all .2s;text-align:center;background:var(--cream2);margin-bottom:8px;}
+.upload-area:hover{border-color:var(--accent);background:var(--accentbg);}
+.upload-label{font-family:'Caveat',cursive;font-size:15px;color:var(--ink3);}
+.field-label{font-family:'Caveat',cursive;font-size:14px;color:var(--accent);font-weight:600;margin:12px 0 5px;}
+.mood-row{display:flex;gap:7px;justify-content:center;}
+.mood-btn{font-size:22px;background:none;border:2px solid transparent;border-radius:50%;width:42px;height:42px;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;}
+.mood-btn:hover{background:var(--cream2);transform:scale(1.15);}
+.mood-btn.selected{border-color:var(--accent);background:var(--accentbg);transform:scale(1.15);}
+.good-list{display:flex;flex-direction:column;gap:6px;}
+.good-item{display:flex;align-items:center;gap:8px;}
+.good-num{font-family:'Playfair Display',serif;font-size:13px;font-weight:700;color:var(--accent);width:16px;flex-shrink:0;}
+.good-input{flex:1;background:var(--cream2);border:1.5px solid var(--border);border-radius:8px;color:var(--ink);font-family:'Caveat',cursive;font-size:15px;padding:7px 10px;outline:none;transition:border-color .2s;}
+.good-input:focus{border-color:var(--accent);background:var(--paper);}
+.diary-txt{width:100%;background:var(--cream2);border:1.5px solid var(--border);border-radius:10px;color:var(--ink);font-family:'Caveat',cursive;font-size:15px;line-height:1.7;padding:11px 13px;outline:none;resize:vertical;min-height:110px;transition:border-color .2s;}
+.diary-txt:focus{border-color:var(--accent);background:var(--paper);}
+.star-btn{background:none;border:none;font-size:20px;cursor:pointer;padding:4px;border-radius:6px;transition:transform .2s;}
+.star-btn:hover{transform:scale(1.2);}
+.diary-save-btn{flex:1;background:var(--accent);border:none;border-radius:11px;color:#fff;font-family:'Playfair Display',serif;font-size:14px;font-weight:700;padding:11px;cursor:pointer;transition:background .2s;}
+.diary-save-btn:hover{background:var(--accent2);}
+.saved-badge{text-align:center;font-family:'Caveat',cursive;font-size:14px;color:var(--accent);padding:5px;opacity:0;transition:opacity .3s;}
+.saved-badge.show{opacity:1;}
+.diary-entry-list{display:flex;flex-direction:column;gap:7px;margin-top:4px;}
+.diary-entry{background:var(--paper);border:1.5px solid var(--border);border-radius:12px;padding:11px 13px;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:10px;}
+.diary-entry:hover{box-shadow:var(--shadow);border-color:var(--border2);}
+.entry-mood{font-size:20px;flex-shrink:0;}
+.entry-info{flex:1;min-width:0;}
+.entry-date{font-family:'Playfair Display',serif;font-size:13px;font-weight:700;margin-bottom:1px;}
+.entry-preview{font-family:'Caveat',cursive;font-size:13px;color:var(--ink3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+/* Dashboard */
+.dash-tabs{display:flex;gap:6px;margin-bottom:14px;}
+.dash-tab{flex:1;padding:7px;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:500;border:1.5px solid var(--border);border-radius:9px;background:none;color:var(--ink3);cursor:pointer;transition:all .2s;text-align:center;}
+.dash-tab.active{background:var(--accent);border-color:var(--accent);color:#fff;}
+.dash-sub{display:none;}.dash-sub.active{display:block;}
+.stat-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;margin-bottom:12px;}
+.stat-card{background:var(--paper);border:1.5px solid var(--border);border-radius:12px;padding:12px 10px;text-align:center;box-shadow:var(--shadow);}
+.stat-num{font-family:'Playfair Display',serif;font-size:26px;font-weight:700;color:var(--accent);line-height:1;}
+.stat-label{font-size:10px;color:var(--ink3);margin-top:3px;font-weight:500;}
+.bar-row{display:flex;align-items:center;gap:9px;margin-bottom:8px;}
+.bar-label{font-size:12px;font-weight:600;width:56px;flex-shrink:0;}
+.bar-track{flex:1;height:16px;background:var(--cream2);border-radius:5px;overflow:hidden;position:relative;}
+.bar-bg{position:absolute;top:0;left:0;height:100%;border-radius:5px;}
+.bar-fg{position:relative;height:100%;border-radius:5px;z-index:1;transition:width .6s cubic-bezier(.22,1,.36,1);}
+.bar-count{font-family:'Caveat',cursive;font-size:13px;color:var(--ink2);width:28px;text-align:right;flex-shrink:0;}
+.pie-wrap{display:flex;align-items:center;gap:16px;}
+.pie-svg-wrap{position:relative;width:120px;height:120px;flex-shrink:0;}
+.pie-svg-wrap svg{width:120px;height:120px;transform:rotate(-90deg);}
+.pie-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.pie-big{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--ink);line-height:1;}
+.pie-sub{font-family:'Caveat',cursive;font-size:11px;color:var(--ink3);}
+.pie-legend{flex:1;display:flex;flex-direction:column;gap:6px;}
+.pie-leg{display:flex;align-items:center;gap:7px;}
+.pie-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+.pie-name{font-size:11px;font-weight:600;flex:1;}
+.pie-pct{font-family:'Caveat',cursive;font-size:14px;font-weight:600;}
+.tl-item{display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--paper);border:1.5px solid var(--border);border-radius:10px;margin-bottom:6px;}
+.tl-month{font-family:'DM Sans',sans-serif;font-size:11px;font-weight:600;color:var(--ink2);width:40px;flex-shrink:0;}
+.tl-track{flex:1;height:10px;background:var(--cream2);border-radius:5px;overflow:hidden;}
+.tl-fill{height:100%;border-radius:5px;background:var(--accent);}
+.tl-count{font-family:'Caveat',cursive;font-size:13px;color:var(--ink2);width:36px;text-align:right;flex-shrink:0;}
+/* Bottom bar */
+.bottom-bar{position:fixed;bottom:0;left:0;right:0;background:rgba(255,253,249,.97);border-top:2px solid var(--border);backdrop-filter:blur(12px);padding:9px 18px;max-width:520px;margin:0 auto;z-index:50;}
+.bottom-inner{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;}
+.bot-item{text-align:center;}
+.bot-label{font-family:'Caveat',cursive;font-size:10px;color:var(--ink3);}
+.bot-val{font-family:'Playfair Display',serif;font-size:14px;font-weight:700;color:var(--accent);}
+/* Confetti */
+.confetti-wrap{position:fixed;inset:0;pointer-events:none;z-index:999;overflow:hidden;}
+.cp{position:absolute;top:-10px;animation:fall linear forwards;}
+@keyframes fall{0%{transform:translateY(0) rotate(0deg);opacity:1;}100%{transform:translateY(110vh) rotate(720deg);opacity:0;}}
+</style>
+</head>
+<body>
+<header>
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+    <div>
+      <div class="header-title">Design Your <span>Life</span> &#10022;</div>
+      <div class="header-sub" id="syncStatusDYL">&#x2601;&#xFE0E; 你的生活，你來設計</div>
+    </div>
+    <button onclick="openDylSyncModal()" style="background:none;border:1.5px solid var(--border);border-radius:9px;color:var(--ink3);font-family:'DM Sans',sans-serif;font-size:11px;padding:6px 10px;cursor:pointer;margin-top:4px;flex-shrink:0;" id="dylSyncBtn">☁ 同步</button>
+  </div>
+  <div class="tab-bar">
+    <button class="tab active" onclick="switchTab('todo',this)">&#128203; 月計劃</button>
+    <button class="tab" onclick="switchTab('yearly',this)">&#127919; 年度目標</button>
+    <button class="tab" onclick="switchTab('diary',this)">&#128214; 日記</button>
+    <button class="tab" onclick="switchTab('dash',this)">&#10022; 統計</button>
+  </div>
+</header>
+
+<div class="page">
+
+<!-- ===== MONTHLY TODO ===== -->
+<div class="page-section active" id="sec-todo">
+  <div style="height:4px"></div>
+  <div class="mnav">
+    <button class="mnav-btn" onclick="changeMonth(-1)">&#8249;</button>
+    <div class="mnav-label" id="todoMonthLabel"></div>
+    <button class="mnav-btn" onclick="changeMonth(1)">&#8250;</button>
+  </div>
+  <div class="add-row">
+    <button class="add-main-btn" onclick="toggleForm('todoForm')">＋ 新增本月目標</button>
+  </div>
+  <div class="add-form" id="todoForm">
+    <div class="form-row">
+      <input class="form-input" id="tTitle" placeholder="目標名稱 *"/>
+      <select class="form-select" id="tCat">
+        <option value="工作">💼 工作</option><option value="自學">📚 自學</option>
+        <option value="閱讀">📖 閱讀</option><option value="興趣">🎨 興趣</option>
+        <option value="旅遊">✈️ 旅遊</option><option value="其他">⭐ 其他</option>
+      </select>
+    </div>
+    <div class="form-row">
+      <select class="form-select" id="tPrio">
+        <option value="high">🔴 高優先</option><option value="mid" selected>🟡 中優先</option><option value="low">🟢 低優先</option>
+      </select>
+      <input class="form-input" id="tDate" type="date"/>
+    </div>
+    <input class="form-input form-full" id="tNote" placeholder="備註（選填）"/>
+    <div class="form-actions">
+      <button class="btn-cancel" onclick="toggleForm('todoForm')">取消</button>
+      <button class="btn-save" onclick="addTodo()">✓ 儲存</button>
+    </div>
+  </div>
+  <div class="cat-filter" id="todoCatFilter">
+    <div class="cat-pill" onclick="setTodoFilter('all',this)" style="background:var(--accent);color:#fff;border-color:var(--accent)">全部</div>
+    <div class="cat-pill" onclick="setTodoFilter('工作',this)">💼 工作</div>
+    <div class="cat-pill" onclick="setTodoFilter('自學',this)">📚 自學</div>
+    <div class="cat-pill" onclick="setTodoFilter('閱讀',this)">📖 閱讀</div>
+    <div class="cat-pill" onclick="setTodoFilter('興趣',this)">🎨 興趣</div>
+    <div class="cat-pill" onclick="setTodoFilter('旅遊',this)">✈️ 旅遊</div>
+    <div class="cat-pill" onclick="setTodoFilter('其他',this)">⭐ 其他</div>
+  </div>
+  <div class="sort-row">
+    <span class="sort-label">排序</span>
+    <select class="sort-select" id="todoSort" onchange="renderTodos()">
+      <option value="default">建立順序</option>
+      <option value="prio-desc">優先級（高→低）</option>
+      <option value="prio-asc">優先級（低→高）</option>
+      <option value="cat">類別</option>
+      <option value="progress-desc">進度（高→低）</option>
+      <option value="progress-asc">進度（低→高）</option>
+      <option value="date-asc">期限（近→遠）</option>
+      <option value="date-desc">期限（遠→近）</option>
+      <option value="title-asc">名稱 A → Z</option>
+      <option value="title-desc">名稱 Z → A</option>
+    </select>
+  </div>
+  <div id="todoList"></div>
+</div>
+
+<!-- ===== YEARLY GOALS ===== -->
+<div class="page-section" id="sec-yearly">
+  <div style="height:4px"></div>
+  <div class="mnav">
+    <button class="mnav-btn" onclick="changeYear(-1)">&#8249;</button>
+    <div class="mnav-label" id="yearLabel"></div>
+    <button class="mnav-btn" onclick="changeYear(1)">&#8250;</button>
+  </div>
+  <div class="add-row">
+    <button class="add-main-btn" onclick="toggleForm('yearlyForm')">＋ 新增年度目標</button>
+  </div>
+  <div class="add-form" id="yearlyForm">
+    <div class="form-row">
+      <input class="form-input" id="ygTitle" placeholder="年度目標名稱 *"/>
+      <select class="form-select" id="ygCat">
+        <option value="工作">💼 工作</option><option value="自學">📚 自學</option>
+        <option value="閱讀">📖 閱讀</option><option value="興趣">🎨 興趣</option>
+        <option value="旅遊">✈️ 旅遊</option><option value="其他">⭐ 其他</option>
+      </select>
+    </div>
+    <div class="form-row">
+      <select class="form-select" id="ygPrio">
+        <option value="high">🔴 高優先</option><option value="mid" selected>🟡 中優先</option><option value="low">🟢 低優先</option>
+      </select>
+      <input class="form-input" id="ygDeadline" type="date"/>
+    </div>
+    <input class="form-input form-full" id="ygNote" placeholder="備註（選填）"/>
+    <div class="form-actions">
+      <button class="btn-cancel" onclick="toggleForm('yearlyForm')">取消</button>
+      <button class="btn-save" onclick="addYearlyGoal()">✓ 儲存</button>
+    </div>
+  </div>
+  <div class="cat-filter" id="yearlyCatFilter">
+    <div class="cat-pill" onclick="setYearlyFilter('all',this)" style="background:var(--accent);color:#fff;border-color:var(--accent)">全部</div>
+    <div class="cat-pill" onclick="setYearlyFilter('工作',this)">💼 工作</div>
+    <div class="cat-pill" onclick="setYearlyFilter('自學',this)">📚 自學</div>
+    <div class="cat-pill" onclick="setYearlyFilter('閱讀',this)">📖 閱讀</div>
+    <div class="cat-pill" onclick="setYearlyFilter('興趣',this)">🎨 興趣</div>
+    <div class="cat-pill" onclick="setYearlyFilter('旅遊',this)">✈️ 旅遊</div>
+    <div class="cat-pill" onclick="setYearlyFilter('其他',this)">⭐ 其他</div>
+  </div>
+  <div class="sort-row">
+    <span class="sort-label">排序</span>
+    <select class="sort-select" id="yearlySort" onchange="renderYearly()">
+      <option value="default">建立順序</option>
+      <option value="prio-desc">優先級（高→低）</option>
+      <option value="prio-asc">優先級（低→高）</option>
+      <option value="cat">類別</option>
+      <option value="progress-desc">進度（高→低）</option>
+      <option value="progress-asc">進度（低→高）</option>
+      <option value="date-asc">期限（近→遠）</option>
+      <option value="date-desc">期限（遠→近）</option>
+      <option value="title-asc">名稱 A → Z</option>
+      <option value="title-desc">名稱 Z → A</option>
+    </select>
+  </div>
+  <div id="yearlyList"></div>
+</div>
+
+<!-- ===== DIARY ===== -->
+<div class="page-section" id="sec-diary">
+  <div style="height:4px"></div>
+  <div class="mnav">
+    <button class="mnav-btn" onclick="changeDiaryDate(-1)">&#8249;</button>
+    <div class="mnav-label" id="diaryDateLabel"></div>
+    <button class="mnav-btn" onclick="changeDiaryDate(1)">&#8250;</button>
+  </div>
+  <div class="card" style="padding:0;overflow:hidden;">
+    <div id="photoStrip" style="display:none">
+      <img id="photoMain" class="diary-photo-main" src="" alt=""/>
+      <div class="diary-photo-thumbs" id="photoThumbs"></div>
+      <div style="padding:0 14px 8px">
+        <button onclick="document.getElementById('imgMore').click()" style="width:100%;background:var(--accentbg);border:1.5px solid var(--border);border-radius:9px;color:var(--accent);font-family:'Caveat',cursive;font-size:13px;padding:7px;cursor:pointer;">＋ 新增更多照片</button>
+        <input type="file" id="imgMore" accept="image/*" multiple style="display:none" onchange="handleImages(event)"/>
+      </div>
+    </div>
+    <div style="padding:14px">
+      <div id="uploadArea" class="upload-area" onclick="document.getElementById('imgInput').click()">
+        <div class="upload-label">📷 點擊上傳照片（顯示在日記頂端）</div>
+        <input type="file" id="imgInput" accept="image/*" multiple style="display:none" onchange="handleImages(event)"/>
+      </div>
+      <div class="field-label">今天心情</div>
+      <div class="mood-row">
+        <button class="mood-btn" onclick="pickMood('😊',this)">😊</button>
+        <button class="mood-btn" onclick="pickMood('🥰',this)">🥰</button>
+        <button class="mood-btn" onclick="pickMood('😌',this)">😌</button>
+        <button class="mood-btn" onclick="pickMood('😔',this)">😔</button>
+        <button class="mood-btn" onclick="pickMood('😤',this)">😤</button>
+        <button class="mood-btn" onclick="pickMood('🤯',this)">🤯</button>
+      </div>
+      <div class="field-label">今日三件好事</div>
+      <div class="good-list">
+        <div class="good-item"><div class="good-num">1.</div><input class="good-input" id="good1" placeholder="今天有什麼好事？"/></div>
+        <div class="good-item"><div class="good-num">2.</div><input class="good-input" id="good2" placeholder=""/></div>
+        <div class="good-item"><div class="good-num">3.</div><input class="good-input" id="good3" placeholder=""/></div>
+      </div>
+      <div class="field-label">今日記錄</div>
+      <textarea class="diary-txt" id="diaryText" placeholder="寫下今天的想法、感受、靈感..."></textarea>
+      <div style="display:flex;align-items:center;gap:8px;margin-top:12px;">
+        <button class="star-btn" id="starBtn" onclick="toggleStar()">⭐</button>
+        <span style="font-family:'Caveat',cursive;font-size:13px;color:var(--ink3);flex-shrink:0">標記重要</span>
+        <button class="diary-save-btn" onclick="saveDiary()">儲存日記</button>
+      </div>
+      <div class="saved-badge" id="savedBadge">✓ 已儲存！</div>
+    </div>
+  </div>
+  <div class="sec-title" style="margin-top:4px">過去的日記</div>
+  <div class="sec-sub">點擊查看或編輯</div>
+  <div class="diary-entry-list" id="diaryEntryList"></div>
+</div>
+
+<!-- ===== DASHBOARD ===== -->
+<div class="page-section" id="sec-dash">
+  <div style="height:4px"></div>
+  <div class="dash-tabs">
+    <button class="dash-tab active" onclick="switchDashTab('monthly',this)">📋 本月統計</button>
+    <button class="dash-tab" onclick="switchDashTab('yearly',this)">🎯 年度統計</button>
+  </div>
+  <div class="dash-sub active" id="dash-monthly">
+    <div class="mnav">
+      <button class="mnav-btn" onclick="changeDashMonth(-1)">&#8249;</button>
+      <div class="mnav-label" id="dashMonthLabel"></div>
+      <button class="mnav-btn" onclick="changeDashMonth(1)">&#8250;</button>
+    </div>
+    <div class="stat-row">
+      <div class="stat-card"><div class="stat-num" id="mStatTotal">0</div><div class="stat-label">月目標</div></div>
+      <div class="stat-card"><div class="stat-num" id="mStatDone">0</div><div class="stat-label">已完成</div></div>
+      <div class="stat-card"><div class="stat-num" id="mStatDiary">0</div><div class="stat-label">日記天數</div></div>
+    </div>
+    <div class="card"><div class="sec-title" style="font-size:14px;margin-bottom:10px">各類別完成</div><div id="mBarChart"></div></div>
+    <div class="card">
+      <div class="sec-title" style="font-size:14px;margin-bottom:10px">完成率</div>
+      <div class="pie-wrap">
+        <div class="pie-svg-wrap"><svg viewBox="0 0 120 120" id="mPieSvg"></svg><div class="pie-center"><div class="pie-big" id="mPieNum">0%</div><div class="pie-sub">完成率</div></div></div>
+        <div class="pie-legend" id="mPieLegend"></div>
+      </div>
+    </div>
+    <div class="card"><div class="sec-title" style="font-size:14px;margin-bottom:10px">全年趨勢</div><div id="mTimeline"></div></div>
+  </div>
+  <div class="dash-sub" id="dash-yearly">
+    <div class="mnav">
+      <button class="mnav-btn" onclick="changeDashYear(-1)">&#8249;</button>
+      <div class="mnav-label" id="dashYearLabel"></div>
+      <button class="mnav-btn" onclick="changeDashYear(1)">&#8250;</button>
+    </div>
+    <div class="stat-row">
+      <div class="stat-card"><div class="stat-num" id="yStatTotal">0</div><div class="stat-label">年度目標</div></div>
+      <div class="stat-card"><div class="stat-num" id="yStatDone">0</div><div class="stat-label">已完成</div></div>
+      <div class="stat-card"><div class="stat-num" id="yStatInProg">0</div><div class="stat-label">進行中</div></div>
+    </div>
+    <div class="card"><div class="sec-title" style="font-size:14px;margin-bottom:10px">各類別完成</div><div id="yBarChart"></div></div>
+    <div class="card">
+      <div class="sec-title" style="font-size:14px;margin-bottom:10px">整體完成率</div>
+      <div class="pie-wrap">
+        <div class="pie-svg-wrap"><svg viewBox="0 0 120 120" id="yPieSvg"></svg><div class="pie-center"><div class="pie-big" id="yPieNum">0%</div><div class="pie-sub">完成率</div></div></div>
+        <div class="pie-legend" id="yPieLegend"></div>
+      </div>
+    </div>
+    <div class="card"><div class="sec-title" style="font-size:14px;margin-bottom:8px">進行中的目標</div><div id="yInProgList"></div></div>
+  </div>
+  <div style="margin-top:4px">
+    <button class="btn-save" style="width:100%;padding:11px;border-radius:11px;font-size:13px" onclick="exportData()">⬇ 匯出 CSV</button>
+  </div>
+</div>
+
+</div><!-- /page -->
+
+<div class="bottom-bar">
+  <div class="bottom-inner">
+    <div class="bot-item"><div class="bot-label">本月完成</div><div class="bot-val" id="botMonthly">0/0</div></div>
+    <div class="bot-item"><div class="bot-label">年度完成</div><div class="bot-val" id="botYearly">0/0</div></div>
+    <div class="bot-item"><div class="bot-label">今日心情</div><div class="bot-val" id="botMood">—</div></div>
+  </div>
+</div>
+<div class="confetti-wrap" id="confettiWrap"></div>
+
+<!-- ── SYNC MODAL ── -->
+<div id="dylSyncOverlay" onclick="if(event.target===this)closeDylSyncModal()" style="display:none;position:fixed;inset:0;background:rgba(44,36,22,0.45);backdrop-filter:blur(4px);z-index:200;align-items:flex-end;justify-content:center;">
+  <div style="background:var(--paper);border:1.5px solid var(--border);border-radius:20px 20px 0 0;padding:22px 20px 36px;width:100%;max-width:520px;transform:translateY(0);box-shadow:0 -8px 32px rgba(44,36,22,0.1);">
+    <div style="width:36px;height:4px;background:var(--border2);border-radius:2px;margin:0 auto 18px;"></div>
+    <div style="font-family:'Playfair Display',serif;font-size:16px;font-weight:700;margin-bottom:3px;">☁ Google Sheets 同步</div>
+    <div style="font-family:'Caveat',cursive;font-size:13px;color:var(--ink3);margin-bottom:14px;">設定後自動跨裝置同步（照片除外）</div>
+    <div style="margin-bottom:12px;">
+      <div style="font-family:'Caveat',cursive;font-size:13px;color:var(--accent);font-weight:600;margin-bottom:6px;">Apps Script 網址</div>
+      <input id="dylScriptUrl" type="url" placeholder="https://script.google.com/macros/s/..." style="width:100%;background:var(--cream2);border:1.5px solid var(--border);border-radius:9px;color:var(--ink);font-family:'DM Sans',sans-serif;font-size:12px;padding:9px 12px;outline:none;"/>
+      <div style="font-family:'Caveat',cursive;font-size:12px;color:var(--ink3);margin-top:5px;">貼上部署網址後會自動記住</div>
+    </div>
+    <div id="dylSyncMsg" style="font-family:'Caveat',cursive;font-size:13px;min-height:20px;margin-bottom:12px;"></div>
+    <div style="display:flex;flex-direction:column;gap:8px;">
+      <button onclick="dylPush()" style="background:var(--accent);border:none;border-radius:11px;color:#fff;font-family:'Playfair Display',serif;font-size:14px;font-weight:700;padding:12px;cursor:pointer;">⬆ 上傳到 Google（本機 → 雲端）</button>
+      <button onclick="dylPull()" style="background:#7ab5d4;border:none;border-radius:11px;color:#fff;font-family:'Playfair Display',serif;font-size:14px;font-weight:700;padding:12px;cursor:pointer;">⬇ 從 Google 下載（雲端 → 本機）</button>
+      <button onclick="closeDylSyncModal()" style="background:none;border:1.5px solid var(--border);border-radius:11px;color:var(--ink3);font-family:'DM Sans',sans-serif;font-size:13px;padding:11px;cursor:pointer;">關閉</button>
+    </div>
+    <div style="font-family:'Caveat',cursive;font-size:12px;color:var(--ink3);margin-top:14px;line-height:1.6;">💡 開啟自動同步後，每次儲存都會靜默同步到雲端，換裝置時開啟 app 會自動下載最新資料</div>
+  </div>
+</div>
+
+<script>
+var LS_KEY = 'dyl_v3';
+var appData = { todos: {}, yearly: {}, diaries: {} };
+var idCtr = 0;
+
+var todoYear, todoMonth, goalYear;
+var dashMY, dashMM, dashYV;
+var diaryDate;
+var todoFilter = 'all';
+var yearlyFilter = 'all';
+var curMood = '', curImages = [], curStar = false, curPhotoIdx = 0;
+
+var CAT_COLORS = { '工作':'#e8956d','自學':'#7ab5d4','閱讀':'#9dc48a','興趣':'#d4a0c8','旅遊':'#f0c060','其他':'#b8a898' };
+var CAT_EMOJI  = { '工作':'💼','自學':'📚','閱讀':'📖','興趣':'🎨','旅遊':'✈️','其他':'⭐' };
+var MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+var DYL_SCRIPT_KEY = 'dyl_scriptUrl';
+var dylSyncTimer = null;
+
+function getDylScriptUrl() {
+  return localStorage.getItem(DYL_SCRIPT_KEY) || '';
+}
+
+function setDylStatus(msg, color) {
+  var el = document.getElementById('syncStatusDYL');
+  var btn = document.getElementById('dylSyncBtn');
+  if (!msg) {
+    if (el) el.textContent = '☁ 你的生活，你來設計';
+    if (btn) { btn.textContent = '☁ 同步'; btn.style.borderColor = ''; btn.style.color = ''; }
+    return;
+  }
+  if (el) el.textContent = msg;
+  if (btn) { btn.textContent = msg; btn.style.color = color || 'var(--accent)'; }
+}
+
+function openDylSyncModal() {
+  var url = getDylScriptUrl();
+  document.getElementById('dylScriptUrl').value = url;
+  document.getElementById('dylSyncMsg').textContent = '';
+  document.getElementById('dylSyncOverlay').style.display = 'flex';
+}
+function closeDylSyncModal() {
+  document.getElementById('dylSyncOverlay').style.display = 'none';
+}
+
+function save() {
+  try { localStorage.setItem(LS_KEY, JSON.stringify({ appData: appData, idCtr: idCtr })); } catch(e) {}
+  // Auto-sync: debounce 3 seconds after last change
+  var url = getDylScriptUrl();
+  if (!url) return;
+  if (dylSyncTimer) clearTimeout(dylSyncTimer);
+  dylSyncTimer = setTimeout(function() { dylPushSilent(); }, 3000);
+}
+
+function load() {
+  try {
+    var r = localStorage.getItem(LS_KEY);
+    if (!r) return;
+    var p = JSON.parse(r);
+    if (p.appData) appData = p.appData;
+    if (p.idCtr) idCtr = p.idCtr;
+  } catch(e) {}
+}
+
+// ── Google Sheets push/pull ───────────────────
+function buildSyncPayload() {
+  // 日記：包含 driveUrl / fileId，不包含 base64 dataUrl
+  var diariesClean = {};
+  var dkeys = Object.keys(appData.diaries);
+  for (var i = 0; i < dkeys.length; i++) {
+    var k = dkeys[i];
+    var e = appData.diaries[k];
+    var imagesClean = (e.images || []).map(function(img) {
+      return { name: img.name, driveUrl: img.driveUrl || null, fileId: img.fileId || null };
+    });
+    diariesClean[k] = {
+      mood: e.mood, good1: e.good1, good2: e.good2, good3: e.good3,
+      text: e.text, star: e.star, savedAt: e.savedAt,
+      images: imagesClean
+    };
+  }
+  return {
+    action:  'saveData',
+    data: {
+      todos:   appData.todos,
+      yearly:  appData.yearly,
+      diaries: diariesClean,
+      idCtr:   idCtr
+    }
+  };
+}
+
+async function dylPushSilent() {
+  var url = getDylScriptUrl();
+  if (!url) return;
+  try {
+    setDylStatus('↑ 同步中…');
+    var res = await fetch(url, {
+      method: 'POST',
+      body: JSON.stringify(buildSyncPayload()),
+      headers: { 'Content-Type': 'text/plain' }
+    });
+    var json = await res.json();
+    if (json.ok) {
+      setDylStatus('✓ ' + new Date().toLocaleTimeString('zh-TW', {hour:'2-digit',minute:'2-digit'}) + ' 已同步');
+      setTimeout(function(){ setDylStatus(''); }, 4000);
+    } else {
+      setDylStatus('⚠ 同步失敗', 'var(--accent)');
+    }
+  } catch(e) {
+    setDylStatus('⚠ 同步失敗', 'var(--accent)');
+  }
+}
+
+async function dylPush() {
+  var url = document.getElementById('dylScriptUrl').value.trim();
+  if (url) localStorage.setItem(DYL_SCRIPT_KEY, url);
+  else url = getDylScriptUrl();
+  if (!url) { document.getElementById('dylSyncMsg').textContent = '⚠ 請先輸入網址'; return; }
+  document.getElementById('dylSyncMsg').textContent = '⏳ 上傳中…';
+  try {
+    var res = await fetch(url, {
+      method: 'POST',
+      body: JSON.stringify(buildSyncPayload()),
+      headers: { 'Content-Type': 'text/plain' }
+    });
+    var json = await res.json();
+    var el = document.getElementById('dylSyncMsg');
+    if (json.ok) { el.textContent = '✓ 已上傳到 Google Sheets！'; el.style.color = '#7ab5d4'; }
+    else { el.textContent = '✗ 失敗：' + (json.error||'未知錯誤'); el.style.color = 'var(--accent)'; }
+  } catch(e) {
+    document.getElementById('dylSyncMsg').textContent = '✗ 連線失敗，請確認網址';
+  }
+}
+
+function applyRemoteData(d) {
+  if (d.todos)  appData.todos  = d.todos;
+  if (d.yearly) appData.yearly = d.yearly;
+  if (d.diaries) {
+    var keys = Object.keys(d.diaries);
+    for (var i = 0; i < keys.length; i++) {
+      var k      = keys[i];
+      var remote = d.diaries[k];
+      // 直接用雲端資料（包含 driveUrl），照片 URL 已包含在 images 陣列裡
+      appData.diaries[k] = {
+        mood: remote.mood, good1: remote.good1, good2: remote.good2,
+        good3: remote.good3, text: remote.text, star: remote.star,
+        savedAt: remote.savedAt,
+        images: (remote.images || [])
+      };
+    }
+  }
+  if (d.idCtr) idCtr = d.idCtr;
+}
+
+async function dylPull() {
+  var url = document.getElementById('dylScriptUrl').value.trim();
+  if (url) localStorage.setItem(DYL_SCRIPT_KEY, url);
+  else url = getDylScriptUrl();
+  if (!url) { document.getElementById('dylSyncMsg').textContent = '⚠ 請先輸入網址'; return; }
+  document.getElementById('dylSyncMsg').textContent = '⏳ 下載中…';
+  try {
+    var res  = await fetch(url + '?action=getData&t=' + Date.now());
+    var json = await res.json();
+    var el   = document.getElementById('dylSyncMsg');
+    if (json.ok && json.data) {
+      applyRemoteData(json.data);
+      save();
+      renderTodos(); renderYearly(); updateBottomBar(); loadDiaryUI();
+      el.textContent = '✓ 已從 Google 下載同步！'; el.style.color = '#7ab5d4';
+    } else if (json.ok && !json.data) {
+      el.textContent = '⚠ 雲端尚無資料，請先上傳'; el.style.color = 'var(--accent)';
+    } else {
+      el.textContent = '✗ 失敗：' + (json.error||'未知錯誤'); el.style.color = 'var(--accent)';
+    }
+  } catch(e) {
+    document.getElementById('dylSyncMsg').textContent = '✗ 連線失敗，請確認網址';
+  }
+}
+
+// Auto-pull on first open if script URL is set and no local data
+function autoLoadOnStart() {
+  var url = getDylScriptUrl();
+  if (!url) return;
+  var hasLocal = !!localStorage.getItem(LS_KEY);
+  if (hasLocal) return;
+  setDylStatus('↓ 載入雲端資料…');
+  fetch(url + '?action=getData&t=' + Date.now())
+    .then(function(r){ return r.json(); })
+    .then(function(json) {
+      if (json.ok && json.data) {
+        applyRemoteData(json.data);
+        save();
+        renderTodos(); renderYearly(); updateBottomBar(); loadDiaryUI();
+        setDylStatus('✓ 雲端資料已載入', '#7ab5d4');
+        setTimeout(function(){ setDylStatus(''); }, 4000);
+      }
+    }).catch(function(){});
+}
+function mk(y, m) { return y + '-' + (m < 10 ? '0' : '') + m; }
+function dk(d) {
+  var y = d.getFullYear(), mo = d.getMonth()+1, da = d.getDate();
+  return y + '-' + (mo<10?'0':'') + mo + '-' + (da<10?'0':'') + da;
+}
+function dLabel(d) {
+  var days = ['日','一','二','三','四','五','六'];
+  return d.getFullYear() + '年' + (d.getMonth()+1) + '月' + d.getDate() + '日（週' + days[d.getDay()] + '）';
+}
+function getTodos(y, m) {
+  var k = mk(y, m);
+  if (!appData.todos[k]) appData.todos[k] = [];
+  return appData.todos[k];
+}
+function getYearly(y) {
+  var k = String(y);
+  if (!appData.yearly[k]) appData.yearly[k] = [];
+  return appData.yearly[k];
+}
+
+// ── Tab switching ──────────────────────────────
+function switchTab(tab, el) {
+  document.querySelectorAll('.tab').forEach(function(t){ t.classList.remove('active'); });
+  document.querySelectorAll('.page-section').forEach(function(s){ s.classList.remove('active'); });
+  el.classList.add('active');
+  document.getElementById('sec-' + tab).classList.add('active');
+  if (tab === 'dash') renderDash();
+  if (tab === 'diary') loadDiaryUI();
+  if (tab === 'yearly') renderYearly();
+}
+function switchDashTab(sub, el) {
+  document.querySelectorAll('.dash-tab').forEach(function(t){ t.classList.remove('active'); });
+  document.querySelectorAll('.dash-sub').forEach(function(s){ s.classList.remove('active'); });
+  el.classList.add('active');
+  document.getElementById('dash-' + sub).classList.add('active');
+  renderDash();
+}
+
+// ── Navigation ────────────────────────────────
+function changeMonth(d) {
+  todoMonth += d;
+  if (todoMonth > 12) { todoMonth = 1; todoYear++; }
+  if (todoMonth < 1)  { todoMonth = 12; todoYear--; }
+  document.getElementById('todoMonthLabel').textContent = mk(todoYear, todoMonth).replace('-', ' / ');
+  renderTodos();
+}
+function changeYear(d) {
+  goalYear += d;
+  document.getElementById('yearLabel').textContent = String(goalYear);
+  renderYearly();
+}
+function changeDashMonth(d) {
+  dashMM += d;
+  if (dashMM > 12) { dashMM = 1; dashMY++; }
+  if (dashMM < 1)  { dashMM = 12; dashMY--; }
+  document.getElementById('dashMonthLabel').textContent = mk(dashMY, dashMM).replace('-', ' / ');
+  renderDash();
+}
+function changeDashYear(d) {
+  dashYV += d;
+  document.getElementById('dashYearLabel').textContent = String(dashYV);
+  renderDash();
+}
+function changeDiaryDate(d) {
+  var nd = new Date(diaryDate);
+  nd.setDate(nd.getDate() + d);
+  diaryDate = nd;
+  loadDiaryUI();
+}
+function toggleForm(id) { document.getElementById(id).classList.toggle('open'); }
+
+// ── Monthly Todo ──────────────────────────────
+function addTodo() {
+  var title = document.getElementById('tTitle').value.trim();
+  if (!title) return;
+  getTodos(todoYear, todoMonth).unshift({
+    id: idCtr++, title: title,
+    cat: document.getElementById('tCat').value,
+    prio: document.getElementById('tPrio').value,
+    date: document.getElementById('tDate').value,
+    note: document.getElementById('tNote').value.trim(),
+    done: false, progress: 0
+  });
+  document.getElementById('tTitle').value = '';
+  document.getElementById('tDate').value = '';
+  document.getElementById('tNote').value = '';
+  document.getElementById('todoForm').classList.remove('open');
+  save(); renderTodos(); updateBottomBar();
+}
+function toggleTodo(id) {
+  var todos = getTodos(todoYear, todoMonth);
+  var t = null;
+  for (var i = 0; i < todos.length; i++) { if (todos[i].id === id) { t = todos[i]; break; } }
+  if (t) {
+    t.done = !t.done;
+    if (t.done) t.progress = 100;
+    else if (t.progress === 100) t.progress = 0;
+    save(); renderTodos(); updateBottomBar();
+  }
+}
+function updateTodoProgress(id, val) {
+  var todos = getTodos(todoYear, todoMonth);
+  var t = null;
+  for (var i = 0; i < todos.length; i++) { if (todos[i].id === id) { t = todos[i]; break; } }
+  if (!t) return;
+  t.progress = Math.max(0, Math.min(100, Math.round(val)));
+  if (t.progress === 100) t.done = true;
+  else t.done = false;
+  save(); renderTodos(); updateBottomBar();
+}
+function handleTodoTrackClick(e, id) {
+  var r = e.currentTarget.getBoundingClientRect();
+  updateTodoProgress(id, (e.clientX - r.left) / r.width * 100);
+}
+function deleteTodo(id) {
+  var k = mk(todoYear, todoMonth);
+  appData.todos[k] = appData.todos[k].filter(function(t){ return t.id !== id; });
+  save(); renderTodos(); updateBottomBar();
+}
+function setTodoFilter(cat, el) {
+  todoFilter = cat;
+  document.querySelectorAll('#todoCatFilter .cat-pill').forEach(function(p){
+    p.style.background = ''; p.style.color = ''; p.style.borderColor = '';
+  });
+  el.style.background = cat === 'all' ? 'var(--accent)' : (CAT_COLORS[cat] || 'var(--accent)');
+  el.style.color = '#fff'; el.style.borderColor = 'transparent';
+  renderTodos();
+}
+// ── Sort helper ───────────────────────────────
+var PRIO_ORDER = { 'high': 0, 'mid': 1, 'low': 2 };
+var CAT_ORDER  = ['工作','自學','閱讀','興趣','旅遊','其他'];
+function applySortOrder(items, sortKey) {
+  var arr = items.slice(); // shallow copy, don't mutate original
+  if (sortKey === 'default') return arr;
+  arr.sort(function(a, b) {
+    switch (sortKey) {
+      case 'prio-desc': return (PRIO_ORDER[a.prio]||1) - (PRIO_ORDER[b.prio]||1);
+      case 'prio-asc':  return (PRIO_ORDER[b.prio]||1) - (PRIO_ORDER[a.prio]||1);
+      case 'cat':       return CAT_ORDER.indexOf(a.cat) - CAT_ORDER.indexOf(b.cat);
+      case 'progress-desc': return (b.progress||0) - (a.progress||0);
+      case 'progress-asc':  return (a.progress||0) - (b.progress||0);
+      case 'date-asc': {
+        var da = a.date || a.deadline || '9999';
+        var db = b.date || b.deadline || '9999';
+        return da < db ? -1 : da > db ? 1 : 0;
+      }
+      case 'date-desc': {
+        var da2 = a.date || a.deadline || '0000';
+        var db2 = b.date || b.deadline || '0000';
+        return da2 > db2 ? -1 : da2 < db2 ? 1 : 0;
+      }
+      case 'title-asc':  return a.title.localeCompare(b.title, 'zh-TW');
+      case 'title-desc': return b.title.localeCompare(a.title, 'zh-TW');
+      default: return 0;
+    }
+  });
+  return arr;
+}
+
+// ── Inline edit ───────────────────────────────
+function openEditTodo(id) {
+  var todos = getTodos(todoYear, todoMonth);
+  var t = null;
+  for (var i = 0; i < todos.length; i++) { if (todos[i].id === id) { t = todos[i]; break; } }
+  if (!t) return;
+  var el = document.getElementById('todo-card-' + id);
+  if (!el) return;
+  el.style.display = 'none';
+  var wrap = document.getElementById('todo-edit-' + id);
+  if (!wrap) return;
+  wrap.innerHTML =
+    '<div class="inline-edit">'
+  + '<div class="ie-row">'
+  + '<input class="ie-input" id="ie-tt-' + id + '" value="' + t.title.replace(/"/g,'&quot;') + '" placeholder="標題"/>'
+  + '<select class="ie-select" id="ie-tc-' + id + '">'
+  + ['工作','自學','閱讀','興趣','旅遊','其他'].map(function(c){ return '<option value="' + c + '"' + (t.cat===c?' selected':'') + '>' + c + '</option>'; }).join('')
+  + '</select></div>'
+  + '<div class="ie-row">'
+  + '<select class="ie-select" id="ie-tp-' + id + '">'
+  + '<option value="high"' + (t.prio==='high'?' selected':'') + '>🔴 高優先</option>'
+  + '<option value="mid"'  + (t.prio==='mid' ?' selected':'') + '>🟡 中優先</option>'
+  + '<option value="low"'  + (t.prio==='low' ?' selected':'') + '>🟢 低優先</option>'
+  + '</select>'
+  + '<input class="ie-input" id="ie-td-' + id + '" type="date" value="' + (t.date||'') + '"/>'
+  + '</div>'
+  + '<input class="ie-input" id="ie-tn-' + id + '" value="' + (t.note||'').replace(/"/g,'&quot;') + '" placeholder="備註（選填）" style="width:100%;margin-bottom:0"/>'
+  + '<div class="ie-actions">'
+  + '<button class="ie-cancel" onclick="cancelEditTodo(' + id + ')">取消</button>'
+  + '<button class="ie-save" onclick="saveEditTodo(' + id + ')">✓ 儲存</button>'
+  + '</div></div>';
+  wrap.style.display = 'block';
+}
+function cancelEditTodo(id) {
+  document.getElementById('todo-edit-' + id).style.display = 'none';
+  document.getElementById('todo-edit-' + id).innerHTML = '';
+  document.getElementById('todo-card-' + id).style.display = '';
+}
+function saveEditTodo(id) {
+  var todos = getTodos(todoYear, todoMonth);
+  var t = null;
+  for (var i = 0; i < todos.length; i++) { if (todos[i].id === id) { t = todos[i]; break; } }
+  if (!t) return;
+  var title = document.getElementById('ie-tt-' + id).value.trim();
+  if (!title) return;
+  t.title = title;
+  t.cat   = document.getElementById('ie-tc-' + id).value;
+  t.prio  = document.getElementById('ie-tp-' + id).value;
+  t.date  = document.getElementById('ie-td-' + id).value;
+  t.note  = document.getElementById('ie-tn-' + id).value.trim();
+  save(); renderTodos(); updateBottomBar();
+}
+
+function openEditYearly(id) {
+  var goals = getYearly(goalYear);
+  var g = null;
+  for (var i = 0; i < goals.length; i++) { if (goals[i].id === id) { g = goals[i]; break; } }
+  if (!g) return;
+  var el = document.getElementById('yg-card-' + id);
+  if (!el) return;
+  el.style.display = 'none';
+  var wrap = document.getElementById('yg-edit-' + id);
+  if (!wrap) return;
+  wrap.innerHTML =
+    '<div class="inline-edit">'
+  + '<div class="ie-row">'
+  + '<input class="ie-input" id="ie-yt-' + id + '" value="' + g.title.replace(/"/g,'&quot;') + '" placeholder="標題"/>'
+  + '<select class="ie-select" id="ie-yc-' + id + '">'
+  + ['工作','自學','閱讀','興趣','旅遊','其他'].map(function(c){ return '<option value="' + c + '"' + (g.cat===c?' selected':'') + '>' + c + '</option>'; }).join('')
+  + '</select></div>'
+  + '<div class="ie-row">'
+  + '<select class="ie-select" id="ie-yp-' + id + '">'
+  + '<option value="high"' + (g.prio==='high'?' selected':'') + '>🔴 高優先</option>'
+  + '<option value="mid"'  + (g.prio==='mid' ?' selected':'') + '>🟡 中優先</option>'
+  + '<option value="low"'  + (g.prio==='low' ?' selected':'') + '>🟢 低優先</option>'
+  + '</select>'
+  + '<input class="ie-input" id="ie-yd-' + id + '" type="date" value="' + (g.deadline||'') + '"/>'
+  + '</div>'
+  + '<input class="ie-input" id="ie-yn-' + id + '" value="' + (g.note||'').replace(/"/g,'&quot;') + '" placeholder="備註（選填）" style="width:100%;margin-bottom:0"/>'
+  + '<div class="ie-actions">'
+  + '<button class="ie-cancel" onclick="cancelEditYearly(' + id + ')">取消</button>'
+  + '<button class="ie-save" onclick="saveEditYearly(' + id + ')">✓ 儲存</button>'
+  + '</div></div>';
+  wrap.style.display = 'block';
+}
+function cancelEditYearly(id) {
+  document.getElementById('yg-edit-' + id).style.display = 'none';
+  document.getElementById('yg-edit-' + id).innerHTML = '';
+  document.getElementById('yg-card-' + id).style.display = '';
+}
+function saveEditYearly(id) {
+  var goals = getYearly(goalYear);
+  var g = null;
+  for (var i = 0; i < goals.length; i++) { if (goals[i].id === id) { g = goals[i]; break; } }
+  if (!g) return;
+  var title = document.getElementById('ie-yt-' + id).value.trim();
+  if (!title) return;
+  g.title    = title;
+  g.cat      = document.getElementById('ie-yc-' + id).value;
+  g.prio     = document.getElementById('ie-yp-' + id).value;
+  g.deadline = document.getElementById('ie-yd-' + id).value;
+  g.note     = document.getElementById('ie-yn-' + id).value.trim();
+  save(); renderYearly(); updateBottomBar();
+}
+
+function renderTodos() {
+  var list = document.getElementById('todoList');
+  var todos = getTodos(todoYear, todoMonth);
+  var filtered = todoFilter === 'all' ? todos : todos.filter(function(t){ return t.cat === todoFilter; });
+
+  if (!filtered.length) {
+    list.innerHTML = '<div class="no-items">&#10022; 這個月還沒有目標，點上方新增吧！</div>';
+    return;
+  }
+
+  var inProg = filtered.filter(function(t){ return !t.done; });
+  var done   = filtered.filter(function(t){ return t.done; });
+  var sortKey = document.getElementById('todoSort') ? document.getElementById('todoSort').value : 'default';
+  inProg = applySortOrder(inProg, sortKey);
+  done   = applySortOrder(done, sortKey);
+  var html   = '';
+
+  // In-progress section
+  html += '<div class="list-hdr"><div class="list-hdr-line"></div><div class="list-hdr-label">進行中 ' + inProg.length + '</div><div class="list-hdr-line"></div></div>';
+  if (inProg.length) {
+    html += '<div class="todo-list">';
+    for (var i = 0; i < inProg.length; i++) {
+      var t = inProg[i];
+      var col = CAT_COLORS[t.cat] || '#b8a898';
+      var prioLabel = t.prio === 'high' ? '高' : t.prio === 'mid' ? '中' : '低';
+      var dateHtml = t.date ? '<span class="meta-txt">📅 ' + t.date + '</span>' : '';
+      var noteHtml = t.note ? '<span class="meta-txt">' + t.note + '</span>' : '';
+      html += '<div id="todo-edit-' + t.id + '" style="display:none"></div>'
+            + '<div id="todo-card-' + t.id + '" class="todo-item">'
+            + '<div class="todo-check" onclick="toggleTodo(' + t.id + ')"></div>'
+            + '<div class="todo-body"><div class="todo-title">' + t.title + '</div>'
+            + '<div class="todo-meta"><span class="cat-badge" style="background:' + col + '">' + t.cat + '</span>'
+            + '<span class="prio-badge prio-' + t.prio + '">' + prioLabel + '優先</span>'
+            + dateHtml + noteHtml + '</div>'
+            + '<div class="todo-prog-row">'
+            + '<div class="todo-prog-track draggable-track" data-id="' + t.id + '" data-type="todo">'
+            + '<div class="todo-prog-fill" style="width:' + (t.progress||0) + '%;background:' + col + '"></div></div>'
+            + '<span class="prog-pct-label">' + (t.progress||0) + '%</span>'
+            + '</div></div>'
+            + '<button class="edit-btn" onclick="openEditTodo(' + t.id + ')">✏️</button>'
+            + '<button class="item-del" onclick="deleteTodo(' + t.id + ')">✕</button></div>';
+    }
+    html += '</div>';
+  } else {
+    html += '<div class="no-items" style="padding:16px">&#10022; 本月目標全部完成了！太棒了！</div>';
+  }
+
+  // Achievement wall
+  if (done.length) {
+    html += '<div class="list-hdr"><div class="list-hdr-line"></div><div class="list-hdr-label">🏆 成就牆 ' + done.length + '</div><div class="list-hdr-line"></div></div>';
+    html += '<div class="achieve-list">';
+    for (var j = 0; j < done.length; j++) {
+      var t2 = done[j];
+      var col2 = CAT_COLORS[t2.cat] || '#b8a898';
+      var emoji = CAT_EMOJI[t2.cat] || '✦';
+      var doneDate = t2.date ? '📅 ' + t2.date + ' 完成' : '✓ 已完成';
+      html += '<div class="achieve-item">'
+            + '<div class="achieve-emoji">' + emoji + '</div>'
+            + '<div class="achieve-body"><div class="achieve-title">' + t2.title + '</div>'
+            + '<div class="achieve-meta"><span class="cat-badge" style="background:' + col2 + '">' + t2.cat + '</span>'
+            + '<span class="meta-txt">' + doneDate + '</span></div></div>'
+            + '<button class="achieve-undo" onclick="toggleTodo(' + t2.id + ')" title="取消完成">↩</button>'
+            + '<button class="item-del" onclick="deleteTodo(' + t2.id + ')">✕</button></div>';
+    }
+    html += '</div>';
+  }
+
+  list.innerHTML = html;
+}
+
+// ── Yearly Goals ──────────────────────────────
+function addYearlyGoal() {
+  var title = document.getElementById('ygTitle').value.trim();
+  if (!title) return;
+  getYearly(goalYear).unshift({
+    id: idCtr++, title: title,
+    cat: document.getElementById('ygCat').value,
+    prio: document.getElementById('ygPrio').value,
+    deadline: document.getElementById('ygDeadline').value,
+    note: document.getElementById('ygNote').value.trim(),
+    done: false, progress: 0, completedAt: null
+  });
+  document.getElementById('ygTitle').value = '';
+  document.getElementById('ygDeadline').value = '';
+  document.getElementById('ygNote').value = '';
+  document.getElementById('yearlyForm').classList.remove('open');
+  save(); renderYearly(); updateBottomBar();
+}
+function toggleYearly(id) {
+  var goals = getYearly(goalYear);
+  var g = null;
+  for (var i = 0; i < goals.length; i++) { if (goals[i].id === id) { g = goals[i]; break; } }
+  if (!g) return;
+  g.done = !g.done;
+  if (g.done) { g.progress = 100; g.completedAt = Date.now(); fireConfetti(); }
+  else { g.progress = 0; g.completedAt = null; }
+  save(); renderYearly(); updateBottomBar();
+}
+function updateProgress(id, val) {
+  var goals = getYearly(goalYear);
+  var g = null;
+  for (var i = 0; i < goals.length; i++) { if (goals[i].id === id) { g = goals[i]; break; } }
+  if (!g) return;
+  g.progress = Math.max(0, Math.min(100, parseInt(val) || 0));
+  if (g.progress === 100 && !g.done) { g.done = true; g.completedAt = Date.now(); fireConfetti(); }
+  else if (g.progress < 100) { g.done = false; g.completedAt = null; }
+  save(); renderYearly(); updateBottomBar();
+}
+function handleTrackClick(e, id) {
+  var r = e.currentTarget.getBoundingClientRect();
+  updateProgress(id, Math.round((e.clientX - r.left) / r.width * 100));
+}
+function deleteYearly(id) {
+  var k = String(goalYear);
+  appData.yearly[k] = appData.yearly[k].filter(function(g){ return g.id !== id; });
+  save(); renderYearly(); updateBottomBar();
+}
+function setYearlyFilter(cat, el) {
+  yearlyFilter = cat;
+  document.querySelectorAll('#yearlyCatFilter .cat-pill').forEach(function(p){
+    p.style.background = ''; p.style.color = ''; p.style.borderColor = '';
+  });
+  el.style.background = cat === 'all' ? 'var(--accent)' : (CAT_COLORS[cat] || 'var(--accent)');
+  el.style.color = '#fff'; el.style.borderColor = 'transparent';
+  renderYearly();
+}
+function renderYearly() {
+  var list = document.getElementById('yearlyList');
+  var goals = getYearly(goalYear);
+  var filtered = yearlyFilter === 'all' ? goals : goals.filter(function(g){ return g.cat === yearlyFilter; });
+
+  if (!filtered.length) {
+    list.innerHTML = '<div class="no-items">&#10022; 今年還沒有年度目標，點上方新增吧！</div>';
+    return;
+  }
+
+  var inProg = filtered.filter(function(g){ return !g.done; });
+  var done   = filtered.filter(function(g){ return g.done; });
+  var sortKey = document.getElementById('yearlySort') ? document.getElementById('yearlySort').value : 'default';
+  inProg = applySortOrder(inProg, sortKey);
+  done   = applySortOrder(done, sortKey);
+  var html   = '';
+
+  // In-progress
+  html += '<div class="list-hdr"><div class="list-hdr-line"></div><div class="list-hdr-label">進行中 ' + inProg.length + '</div><div class="list-hdr-line"></div></div>';
+  if (inProg.length) {
+    for (var i = 0; i < inProg.length; i++) {
+      var g = inProg[i];
+      var col = CAT_COLORS[g.cat] || '#b8a898';
+      var prioLabel = g.prio === 'high' ? '高' : g.prio === 'mid' ? '中' : '低';
+      var dlHtml = g.deadline ? '<span class="meta-txt">📅 ' + g.deadline + '</span>' : '';
+      var ntHtml = g.note ? '<span class="meta-txt">' + g.note + '</span>' : '';
+      html += '<div id="yg-edit-' + g.id + '" style="display:none"></div>'
+            + '<div id="yg-card-' + g.id + '" class="yg-item">'
+            + '<div class="yg-top">'
+            + '<div class="yg-check" onclick="toggleYearly(' + g.id + ')"></div>'
+            + '<div class="yg-body"><div class="yg-title">' + g.title + '</div>'
+            + '<div class="yg-meta"><span class="cat-badge" style="background:' + col + '">' + g.cat + '</span>'
+            + '<span class="prio-badge prio-' + g.prio + '">' + prioLabel + '優先</span>'
+            + dlHtml + ntHtml + '</div></div>'
+            + '<button class="edit-btn" onclick="openEditYearly(' + g.id + ')">✏️</button>'
+            + '<button class="item-del" onclick="deleteYearly(' + g.id + ')">✕</button></div>'
+            + '<div class="yg-prog-row">'
+            + '<div class="yg-track draggable-track" data-id="' + g.id + '" data-type="yearly">'
+            + '<div class="yg-fill" style="width:' + g.progress + '%;background:' + col + '"></div></div>'
+            + '<span class="prog-pct-label">' + g.progress + '%</span></div></div>';
+    }
+  } else {
+    html += '<div class="no-items" style="padding:16px">&#10022; 今年所有目標都完成了！太厲害了！</div>';
+  }
+
+  // Achievement wall
+  if (done.length) {
+    html += '<div class="list-hdr"><div class="list-hdr-line"></div><div class="list-hdr-label">🏆 成就牆 ' + done.length + '</div><div class="list-hdr-line"></div></div>';
+    html += '<div class="achieve-list">';
+    for (var j = 0; j < done.length; j++) {
+      var g2 = done[j];
+      var col2 = CAT_COLORS[g2.cat] || '#b8a898';
+      var emoji2 = CAT_EMOJI[g2.cat] || '✦';
+      var compDate = g2.completedAt ? new Date(g2.completedAt).toLocaleDateString('zh-TW') : '';
+      var compLabel = compDate ? '🎉 ' + compDate + ' 完成' : '✓ 已完成';
+      html += '<div class="achieve-item">'
+            + '<div class="achieve-emoji">' + emoji2 + '</div>'
+            + '<div class="achieve-body"><div class="achieve-title">' + g2.title + '</div>'
+            + '<div class="achieve-meta"><span class="cat-badge" style="background:' + col2 + '">' + g2.cat + '</span>'
+            + '<span class="meta-txt">' + compLabel + '</span></div></div>'
+            + '<button class="achieve-undo" onclick="toggleYearly(' + g2.id + ')" title="取消完成">↩</button>'
+            + '<button class="item-del" onclick="deleteYearly(' + g2.id + ')">✕</button></div>';
+    }
+    html += '</div>';
+  }
+
+  list.innerHTML = html;
+}
+
+// ── Diary ─────────────────────────────────────
+function loadDiaryUI() {
+  document.getElementById('diaryDateLabel').textContent = dLabel(diaryDate);
+  var entry = appData.diaries[dk(diaryDate)] || null;
+  curMood = ''; curImages = []; curStar = false; curPhotoIdx = 0;
+  document.querySelectorAll('.mood-btn').forEach(function(b){ b.classList.remove('selected'); });
+  document.getElementById('good1').value = '';
+  document.getElementById('good2').value = '';
+  document.getElementById('good3').value = '';
+  document.getElementById('diaryText').value = '';
+  document.getElementById('starBtn').textContent = '⭐';
+  document.getElementById('savedBadge').classList.remove('show');
+  if (entry) {
+    if (entry.mood) {
+      curMood = entry.mood;
+      document.querySelectorAll('.mood-btn').forEach(function(b){
+        if (b.textContent.trim() === entry.mood) b.classList.add('selected');
+      });
+    }
+    if (entry.good1) document.getElementById('good1').value = entry.good1;
+    if (entry.good2) document.getElementById('good2').value = entry.good2;
+    if (entry.good3) document.getElementById('good3').value = entry.good3;
+    if (entry.text)  document.getElementById('diaryText').value = entry.text;
+    if (entry.images && entry.images.length) curImages = entry.images.slice();
+    if (entry.star) { curStar = true; document.getElementById('starBtn').textContent = '🌟'; }
+  }
+  renderPhotoStrip();
+  renderDiaryList();
+  updateBottomBar();
+}
+// ── 照片壓縮工具 ──────────────────────────────
+function compressImage(file, maxPx, quality, callback) {
+  var reader = new FileReader();
+  reader.onload = function(ev) {
+    var img = new Image();
+    img.onload = function() {
+      var w = img.width, h = img.height;
+      if (w > maxPx || h > maxPx) {
+        if (w > h) { h = Math.round(h * maxPx / w); w = maxPx; }
+        else       { w = Math.round(w * maxPx / h); h = maxPx; }
+      }
+      var canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      callback(canvas.toDataURL('image/jpeg', quality));
+    };
+    img.src = ev.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function handleImages(e) {
+  var files = Array.from(e.target.files);
+  var scriptUrl = getDylScriptUrl();
+  files.forEach(function(file) {
+    compressImage(file, 800, 0.75, function(dataUrl) {
+      var imgObj = { dataUrl: dataUrl, name: file.name, driveUrl: null, fileId: null, uploading: !!scriptUrl };
+      curImages.push(imgObj);
+      renderPhotoStrip();
+      // 如果有設定 script URL，立即上傳到 Drive
+      if (scriptUrl) {
+        var idx = curImages.indexOf(imgObj);
+        var base64 = dataUrl.split(',')[1];
+        var dateStr = dk(diaryDate);
+        fetch(scriptUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain' },
+          body: JSON.stringify({
+            action: 'uploadPhoto',
+            date: dateStr,
+            filename: dateStr + '_' + Date.now() + '.jpg',
+            mimeType: 'image/jpeg',
+            base64: base64
+          })
+        })
+        .then(function(r){ return r.json(); })
+        .then(function(json) {
+          if (json.ok) {
+            imgObj.driveUrl  = json.url;
+            imgObj.fileId    = json.fileId;
+            imgObj.uploading = false;
+            imgObj.dataUrl   = null; // 釋放記憶體，改用 driveUrl
+            renderPhotoStrip();
+          } else {
+            imgObj.uploading = false;
+            renderPhotoStrip();
+          }
+        })
+        .catch(function() { imgObj.uploading = false; renderPhotoStrip(); });
+      }
+    });
+  });
+  e.target.value = '';
+}
+
+function renderPhotoStrip() {
+  var strip = document.getElementById('photoStrip');
+  var ua    = document.getElementById('uploadArea');
+  if (!curImages.length) { strip.style.display = 'none'; ua.style.display = 'block'; return; }
+  strip.style.display = 'block'; ua.style.display = 'none';
+  if (curPhotoIdx >= curImages.length) curPhotoIdx = 0;
+  var mainSrc = curImages[curPhotoIdx].driveUrl || curImages[curPhotoIdx].dataUrl || '';
+  document.getElementById('photoMain').src = mainSrc;
+  var thumbHtml = '';
+  for (var i = 0; i < curImages.length; i++) {
+    var src = curImages[i].driveUrl || curImages[i].dataUrl || '';
+    var overlay = curImages[i].uploading ? '<div style="position:absolute;inset:0;background:rgba(0,0,0,0.4);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:9px;color:#fff">上傳中</div>' : '';
+    thumbHtml += '<div class="diary-thumb-wrap" style="position:relative;">'
+              + '<img class="diary-thumb' + (i === curPhotoIdx ? ' active' : '') + '" src="' + src + '" onclick="setPhoto(' + i + ')"/>'
+              + overlay
+              + '<button class="img-del" onclick="removePhoto(' + i + ')">✕</button></div>';
+  }
+  document.getElementById('photoThumbs').innerHTML = thumbHtml;
+}
+
+function setPhoto(i) { curPhotoIdx = i; renderPhotoStrip(); }
+
+function removePhoto(i) {
+  var img = curImages[i];
+  // 如果有 Drive fileId，靜默刪除
+  if (img && img.fileId) {
+    var scriptUrl = getDylScriptUrl();
+    if (scriptUrl) {
+      fetch(scriptUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify({ action: 'deletePhoto', fileId: img.fileId })
+      }).catch(function(){});
+    }
+  }
+  curImages.splice(i, 1);
+  if (curPhotoIdx >= curImages.length) curPhotoIdx = Math.max(0, curImages.length - 1);
+  renderPhotoStrip();
+}
+function pickMood(emoji, el) {
+  curMood = emoji;
+  document.querySelectorAll('.mood-btn').forEach(function(b){ b.classList.remove('selected'); });
+  el.classList.add('selected');
+  updateBottomBar();
+}
+function toggleStar() {
+  curStar = !curStar;
+  document.getElementById('starBtn').textContent = curStar ? '🌟' : '⭐';
+}
+function saveDiary() {
+  // Strip large base64 dataUrls before saving — only keep driveUrl+fileId
+  var imagesToSave = curImages.map(function(img) {
+    return { name: img.name, driveUrl: img.driveUrl || null, fileId: img.fileId || null,
+             dataUrl: img.driveUrl ? null : img.dataUrl }; // keep dataUrl only if not yet on Drive
+  });
+  appData.diaries[dk(diaryDate)] = {
+    mood: curMood,
+    good1: document.getElementById('good1').value.trim(),
+    good2: document.getElementById('good2').value.trim(),
+    good3: document.getElementById('good3').value.trim(),
+    text: document.getElementById('diaryText').value,
+    images: imagesToSave,
+    star: curStar,
+    savedAt: Date.now()
+  };
+  save();
+  var b = document.getElementById('savedBadge');
+  b.classList.add('show'); setTimeout(function(){ b.classList.remove('show'); }, 2000);
+  renderDiaryList(); updateBottomBar();
+}
+function renderDiaryList() {
+  var list = document.getElementById('diaryEntryList');
+  var entries = Object.entries(appData.diaries).sort(function(a,b){ return b[0] < a[0] ? -1 : 1; }).slice(0, 30);
+  if (!entries.length) { list.innerHTML = '<div class="no-items">&#10022; 還沒有日記記錄</div>'; return; }
+  var html = '';
+  for (var i = 0; i < entries.length; i++) {
+    var k = entries[i][0], e = entries[i][1];
+    var preview = e.text ? e.text.substring(0, 45).replace(/\n/g, ' ') : (e.good1 || '（無內容）');
+    var imgBadge = (e.images && e.images.length) ? '<div style="font-size:11px;color:var(--ink3)">📷' + e.images.length + '</div>' : '';
+    html += '<div class="diary-entry" onclick="jumpToDiary(\'' + k + '\')">'
+          + '<div class="entry-mood">' + (e.mood || '📓') + '</div>'
+          + '<div class="entry-info"><div class="entry-date">' + k + (e.star ? ' 🌟' : '') + '</div>'
+          + '<div class="entry-preview">' + preview + '...</div></div>'
+          + imgBadge + '</div>';
+  }
+  list.innerHTML = html;
+}
+function jumpToDiary(dateStr) {
+  var p = dateStr.split('-');
+  diaryDate = new Date(parseInt(p[0]), parseInt(p[1])-1, parseInt(p[2]));
+  document.querySelectorAll('.tab').forEach(function(t){ t.classList.remove('active'); });
+  document.querySelectorAll('.page-section').forEach(function(s){ s.classList.remove('active'); });
+  var tabs = document.querySelectorAll('.tab');
+  for (var i = 0; i < tabs.length; i++) {
+    if (tabs[i].textContent.indexOf('日記') !== -1) { tabs[i].classList.add('active'); break; }
+  }
+  document.getElementById('sec-diary').classList.add('active');
+  loadDiaryUI();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ── Dashboard ─────────────────────────────────
+function renderDash() { renderMonthDash(); renderYearDash(); }
+function renderMonthDash() {
+  var todos = getTodos(dashMY, dashMM);
+  var done = todos.filter(function(t){ return t.done; }).length;
+  document.getElementById('mStatTotal').textContent = todos.length;
+  document.getElementById('mStatDone').textContent  = done;
+  var prefix = mk(dashMY, dashMM);
+  document.getElementById('mStatDiary').textContent = Object.keys(appData.diaries).filter(function(k){ return k.indexOf(prefix) === 0; }).length;
+  renderBarChart('mBarChart', todos);
+  renderPie('mPieSvg', 'mPieNum', 'mPieLegend', done, todos.length);
+  renderTimeline();
+}
+function renderYearDash() {
+  var goals = getYearly(dashYV);
+  var done  = goals.filter(function(g){ return g.done; }).length;
+  var inP   = goals.filter(function(g){ return !g.done && g.progress > 0; }).length;
+  document.getElementById('yStatTotal').textContent  = goals.length;
+  document.getElementById('yStatDone').textContent   = done;
+  document.getElementById('yStatInProg').textContent = inP;
+  renderBarChart('yBarChart', goals);
+  renderPie('yPieSvg', 'yPieNum', 'yPieLegend', done, goals.length);
+  var ipGoals = goals.filter(function(g){ return !g.done && g.progress > 0; }).sort(function(a,b){ return b.progress - a.progress; });
+  var ipEl = document.getElementById('yInProgList');
+  if (!ipGoals.length) { ipEl.innerHTML = '<div style="color:var(--ink3);font-family:Caveat,cursive;font-size:14px;text-align:center;padding:10px">無進行中目標</div>'; return; }
+  var html = '';
+  for (var i = 0; i < ipGoals.length; i++) {
+    var g = ipGoals[i], col = CAT_COLORS[g.cat] || '#b8a898';
+    html += '<div style="margin-bottom:10px">'
+          + '<div style="display:flex;justify-content:space-between;margin-bottom:4px">'
+          + '<span style="font-size:13px;font-weight:600">' + g.title + '</span>'
+          + '<span style="font-family:\'Caveat\',cursive;font-size:14px;color:' + col + ';font-weight:600">' + g.progress + '%</span></div>'
+          + '<div class="bar-track" style="height:10px"><div class="bar-fg" style="width:' + g.progress + '%;background:' + col + '"></div></div></div>';
+  }
+  ipEl.innerHTML = html;
+}
+function renderBarChart(elId, items) {
+  var el = document.getElementById(elId);
+  var cc = {};
+  Object.keys(CAT_COLORS).forEach(function(c){ cc[c] = { done: 0, total: 0 }; });
+  items.forEach(function(t){ if (cc[t.cat]) { cc[t.cat].total++; if (t.done) cc[t.cat].done++; } });
+  var active = Object.keys(cc).filter(function(c){ return cc[c].total > 0; });
+  if (!active.length) { el.innerHTML = '<div style="color:var(--ink3);font-family:Caveat,cursive;font-size:14px;text-align:center;padding:10px">尚無資料</div>'; return; }
+  var maxT = 1;
+  active.forEach(function(c){ if (cc[c].total > maxT) maxT = cc[c].total; });
+  var html = '';
+  active.forEach(function(cat) {
+    var v = cc[cat], col = CAT_COLORS[cat];
+    html += '<div class="bar-row"><div class="bar-label">' + cat + '</div>'
+          + '<div class="bar-track"><div class="bar-bg" style="width:' + (v.total/maxT*100) + '%;background:' + col + '33"></div>'
+          + '<div class="bar-fg" style="width:' + (v.done/maxT*100) + '%;background:' + col + '"></div></div>'
+          + '<div class="bar-count">' + v.done + '/' + v.total + '</div></div>';
+  });
+  el.innerHTML = html;
+}
+function renderPie(svgId, numId, legendId, done, total) {
+  var pct = total > 0 ? Math.round(done / total * 100) : 0;
+  document.getElementById(numId).textContent = pct + '%';
+  var R = 42, cx = 60, cy = 60, sw = 16, circ = 2 * Math.PI * R;
+  if (!total) {
+    document.getElementById(svgId).innerHTML = '<circle cx="' + cx + '" cy="' + cy + '" r="' + R + '" fill="none" stroke="#ede4d4" stroke-width="' + sw + '"/>';
+    document.getElementById(legendId).innerHTML = '<div style="color:var(--ink3);font-family:Caveat,cursive;font-size:13px">尚無資料</div>';
+    return;
+  }
+  var dd = done / total * circ, pd = circ - dd;
+  document.getElementById(svgId).innerHTML =
+    '<circle cx="' + cx + '" cy="' + cy + '" r="' + R + '" fill="none" stroke="#ede4d4" stroke-width="' + sw + '"/>'
+  + '<circle cx="' + cx + '" cy="' + cy + '" r="' + R + '" fill="none" stroke="var(--accent)" stroke-width="' + sw + '" stroke-dasharray="' + dd.toFixed(2) + ' ' + pd.toFixed(2) + '" stroke-linecap="butt"/>';
+  document.getElementById(legendId).innerHTML =
+    '<div class="pie-leg"><div class="pie-dot" style="background:var(--accent)"></div><div class="pie-name">已完成</div><div class="pie-pct" style="color:var(--accent)">' + pct + '%</div></div>'
+  + '<div class="pie-leg"><div class="pie-dot" style="background:#ede4d4"></div><div class="pie-name">未完成</div><div class="pie-pct" style="color:var(--ink3)">' + (100-pct) + '%</div></div>'
+  + '<div style="font-family:Caveat,cursive;font-size:12px;color:var(--ink3);margin-top:4px">共 ' + total + ' 項，完成 ' + done + ' 項</div>';
+}
+function renderTimeline() {
+  var tl = document.getElementById('mTimeline');
+  var html = '';
+  for (var m = 1; m <= 12; m++) {
+    var todos = getTodos(dashMY, m);
+    if (!todos.length) continue;
+    var done = todos.filter(function(t){ return t.done; }).length;
+    var pct = Math.round(done / todos.length * 100);
+    html += '<div class="tl-item"><div class="tl-month">' + MONTHS[m-1] + '</div>'
+          + '<div class="tl-track"><div class="tl-fill" style="width:' + pct + '%"></div></div>'
+          + '<div class="tl-count">' + done + '/' + todos.length + '</div></div>';
+  }
+  tl.innerHTML = html || '<div style="color:var(--ink3);font-family:Caveat,cursive;font-size:14px;text-align:center;padding:10px">本年度尚無月計劃資料</div>';
+}
+
+// ── Bottom bar ────────────────────────────────
+function updateBottomBar() {
+  var now = new Date();
+  var mt = getTodos(now.getFullYear(), now.getMonth()+1);
+  document.getElementById('botMonthly').textContent = mt.filter(function(t){ return t.done; }).length + '/' + mt.length;
+  var yg = getYearly(now.getFullYear());
+  document.getElementById('botYearly').textContent = yg.filter(function(g){ return g.done; }).length + '/' + yg.length;
+  var te = appData.diaries[dk(new Date())];
+  document.getElementById('botMood').textContent = (te && te.mood) ? te.mood : '—';
+}
+
+// ── Confetti ──────────────────────────────────
+function fireConfetti() {
+  var wrap = document.getElementById('confettiWrap');
+  var colors = ['#e8956d','#7ab5d4','#9dc48a','#d4a0c8','#f0c060','#c4784a'];
+  for (var i = 0; i < 70; i++) {
+    var p = document.createElement('div');
+    p.className = 'cp';
+    var size = 6 + Math.random() * 6;
+    p.style.cssText = 'left:' + (Math.random()*100) + 'vw;width:' + size + 'px;height:' + size + 'px;'
+      + 'background:' + colors[Math.floor(Math.random()*colors.length)] + ';'
+      + 'border-radius:' + (Math.random() > .5 ? '50%' : '2px') + ';'
+      + 'animation-duration:' + (1.5+Math.random()*2) + 's;animation-delay:' + (Math.random()*.5) + 's;';
+    wrap.appendChild(p);
+    setTimeout(function(el){ return function(){ el.remove(); }; }(p), 3500);
+  }
+}
+
+// ── Export CSV ────────────────────────────────
+function csvEsc(v) {
+  var s = (v === null || v === undefined) ? '' : String(v);
+  if (s.indexOf(',') !== -1 || s.indexOf('"') !== -1 || s.indexOf('\n') !== -1) {
+    s = '"' + s.replace(/"/g, '""') + '"';
+  }
+  return s;
+}
+function csvRow(arr) { return arr.map(csvEsc).join(',') + '\r\n'; }
+
+function exportData() {
+  var csv = '\uFEFF'; // UTF-8 BOM for Excel
+
+  // ── Sheet 1: Monthly Todos ──
+  csv += '=== 月計劃 ===\r\n';
+  csv += csvRow(['月份','標題','類別','優先級','進度%','狀態','期限','備註']);
+  var mKeys = Object.keys(appData.todos).sort();
+  for (var mi = 0; mi < mKeys.length; mi++) {
+    var mk2 = mKeys[mi];
+    var todos = appData.todos[mk2];
+    for (var ti = 0; ti < todos.length; ti++) {
+      var t = todos[ti];
+      csv += csvRow([
+        mk2,
+        t.title,
+        t.cat,
+        t.prio === 'high' ? '高' : t.prio === 'mid' ? '中' : '低',
+        t.progress || 0,
+        t.done ? '已完成' : '進行中',
+        t.date || '',
+        t.note || ''
+      ]);
+    }
+  }
+  csv += '\r\n';
+
+  // ── Sheet 2: Yearly Goals ──
+  csv += '=== 年度目標 ===\r\n';
+  csv += csvRow(['年份','標題','類別','優先級','進度%','狀態','期限','完成日期','備註']);
+  var yKeys = Object.keys(appData.yearly).sort();
+  for (var yi = 0; yi < yKeys.length; yi++) {
+    var yk = yKeys[yi];
+    var goals = appData.yearly[yk];
+    for (var gi = 0; gi < goals.length; gi++) {
+      var g = goals[gi];
+      var compDate = g.completedAt ? new Date(g.completedAt).toLocaleDateString('zh-TW') : '';
+      csv += csvRow([
+        yk,
+        g.title,
+        g.cat,
+        g.prio === 'high' ? '高' : g.prio === 'mid' ? '中' : '低',
+        g.progress || 0,
+        g.done ? '已完成' : '進行中',
+        g.deadline || '',
+        compDate,
+        g.note || ''
+      ]);
+    }
+  }
+  csv += '\r\n';
+
+  // ── Sheet 3: Monthly Summary ──
+  csv += '=== 月份統計摘要 ===\r\n';
+  csv += csvRow(['月份','目標總數','已完成','完成率%','日記天數']);
+  var allMKeys = Object.keys(appData.todos).sort();
+  for (var si = 0; si < allMKeys.length; si++) {
+    var smk = allMKeys[si];
+    var stodos = appData.todos[smk];
+    var sdone = stodos.filter(function(t){ return t.done; }).length;
+    var spct = stodos.length > 0 ? Math.round(sdone / stodos.length * 100) : 0;
+    var diaryCount = Object.keys(appData.diaries).filter(function(dk2){ return dk2.indexOf(smk) === 0; }).length;
+    csv += csvRow([smk, stodos.length, sdone, spct, diaryCount]);
+  }
+  csv += '\r\n';
+
+  // ── Sheet 4: Diary log ──
+  csv += '=== 日記記錄 ===\r\n';
+  csv += csvRow(['日期','心情','好事1','好事2','好事3','內容（前100字）','重要','照片數量']);
+  var dKeys = Object.keys(appData.diaries).sort().reverse();
+  for (var di = 0; di < dKeys.length; di++) {
+    var dk3 = dKeys[di];
+    var e = appData.diaries[dk3];
+    var preview = e.text ? e.text.substring(0, 100).replace(/\n/g, ' ') : '';
+    csv += csvRow([
+      dk3,
+      e.mood || '',
+      e.good1 || '',
+      e.good2 || '',
+      e.good3 || '',
+      preview,
+      e.star ? '是' : '',
+      (e.images && e.images.length) ? e.images.length : 0
+    ]);
+  }
+
+  var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  var today = new Date();
+  var fname = 'design-your-life-' + today.getFullYear() + (today.getMonth()<9?'0':'') + (today.getMonth()+1) + '.csv';
+  a.href = url; a.download = fname;
+  a.click(); URL.revokeObjectURL(url);
+}
+
+// ── Drag progress tracks ──────────────────────
+(function() {
+  var dragging = null; // { track, id, type }
+
+  function pctFromEvent(track, clientX) {
+    var r = track.getBoundingClientRect();
+    return Math.max(0, Math.min(100, Math.round((clientX - r.left) / r.width * 100)));
+  }
+
+  function applyProgress(type, id, pct) {
+    if (type === 'todo') {
+      updateTodoProgress(id, pct);
+    } else {
+      updateProgress(id, pct);
+    }
+  }
+
+  function liveUpdate(track, pct, type) {
+    // Visually update without re-render for smooth drag
+    var fill = track.querySelector('.todo-prog-fill, .yg-fill');
+    var label = track.parentNode.querySelector('.prog-pct-label');
+    if (fill) fill.style.width = pct + '%';
+    if (label) label.textContent = pct + '%';
+  }
+
+  document.addEventListener('mousedown', function(e) {
+    var track = e.target.closest('.draggable-track');
+    if (!track) return;
+    e.preventDefault();
+    var id = parseInt(track.getAttribute('data-id'));
+    var type = track.getAttribute('data-type');
+    dragging = { track: track, id: id, type: type };
+    var pct = pctFromEvent(track, e.clientX);
+    liveUpdate(track, pct, type);
+  });
+
+  document.addEventListener('mousemove', function(e) {
+    if (!dragging) return;
+    var pct = pctFromEvent(dragging.track, e.clientX);
+    liveUpdate(dragging.track, pct, dragging.type);
+  });
+
+  document.addEventListener('mouseup', function(e) {
+    if (!dragging) return;
+    var pct = pctFromEvent(dragging.track, e.clientX);
+    applyProgress(dragging.type, dragging.id, pct);
+    dragging = null;
+  });
+
+  // Touch support
+  document.addEventListener('touchstart', function(e) {
+    var track = e.target.closest('.draggable-track');
+    if (!track) return;
+    var id = parseInt(track.getAttribute('data-id'));
+    var type = track.getAttribute('data-type');
+    dragging = { track: track, id: id, type: type };
+    var pct = pctFromEvent(track, e.touches[0].clientX);
+    liveUpdate(track, pct, type);
+  }, { passive: true });
+
+  document.addEventListener('touchmove', function(e) {
+    if (!dragging) return;
+    var pct = pctFromEvent(dragging.track, e.touches[0].clientX);
+    liveUpdate(dragging.track, pct, dragging.type);
+  }, { passive: true });
+
+  document.addEventListener('touchend', function(e) {
+    if (!dragging) return;
+    var pct = pctFromEvent(dragging.track, e.changedTouches[0].clientX);
+    applyProgress(dragging.type, dragging.id, pct);
+    dragging = null;
+  });
+})();
+
+// ── Init ──────────────────────────────────────
+load();
+var now = new Date();
+todoYear = goalYear = dashMY = dashYV = now.getFullYear();
+todoMonth = dashMM = now.getMonth() + 1;
+diaryDate = now;
+document.getElementById('todoMonthLabel').textContent = mk(todoYear, todoMonth).replace('-', ' / ');
+document.getElementById('yearLabel').textContent      = String(goalYear);
+document.getElementById('dashMonthLabel').textContent = mk(dashMY, dashMM).replace('-', ' / ');
+document.getElementById('dashYearLabel').textContent  = String(dashYV);
+document.getElementById('diaryDateLabel').textContent = dLabel(diaryDate);
+renderTodos();
+renderYearly();
+updateBottomBar();
+loadDiaryUI();
+autoLoadOnStart();
+</script>
+</body>
+</html>
