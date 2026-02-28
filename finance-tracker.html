@@ -1130,10 +1130,29 @@
   // ── Google Sheets Sync ───────────────────────────────────
   const SCRIPT_URL_KEY = 'financeApp_scriptUrl';
 
+  function getDeviceInfo() {
+    const ua = navigator.userAgent;
+    if (/iPhone/.test(ua)) return '📱 iPhone';
+    if (/iPad/.test(ua))   return '📱 iPad';
+    if (/Android/.test(ua)) return '📱 Android';
+    if (/Mac/.test(ua))    return '💻 Mac';
+    if (/Windows/.test(ua)) return '💻 Windows';
+    return '🖥 電腦';
+  }
+
   function openSyncModal() {
     const saved = localStorage.getItem(SCRIPT_URL_KEY) || '';
     document.getElementById('scriptUrlInput').value = saved;
-    document.getElementById('syncModalStatus').textContent = '';
+    const lastDevice = localStorage.getItem('financeApp_lastDevice') || '';
+    const lastTime   = localStorage.getItem('financeApp_lastSyncAt') || '';
+    let info = '';
+    if (lastDevice && lastTime) {
+      const t = new Date(lastTime);
+      const tStr = t.toLocaleDateString('zh-TW') + ' ' + t.toLocaleTimeString('zh-TW', {hour:'2-digit', minute:'2-digit'});
+      info = '最後同步：' + lastDevice + '｜' + tStr;
+    }
+    const el = document.getElementById('syncModalStatus');
+    if (el) { el.textContent = info; el.style.color = 'var(--muted)'; }
     document.getElementById('syncModal').classList.add('open');
   }
 
@@ -1158,11 +1177,17 @@
     try {
       const res = await fetch(url, {
         method: 'POST',
-        body: JSON.stringify({ monthlyData, assets, txIdCounter, currentYear, currentMonth }),
+        body: JSON.stringify({
+          monthlyData, assets, txIdCounter, currentYear, currentMonth,
+          lastDevice: getDeviceInfo(),
+          lastSyncAt: new Date().toISOString()
+        }),
         headers: { 'Content-Type': 'text/plain' }
       });
       const json = await res.json();
       if (json.ok) {
+        localStorage.setItem('financeApp_lastDevice', getDeviceInfo());
+        localStorage.setItem('financeApp_lastSyncAt', new Date().toISOString());
         setSyncStatus('✓ 已上傳到 Google Sheets', 'var(--green)');
       } else {
         setSyncStatus('✗ 上傳失敗：' + (json.error || '未知錯誤'), 'var(--red)');
@@ -1186,10 +1211,12 @@
         if (d.txIdCounter) txIdCounter = d.txIdCounter;
         if (d.currentYear)  currentYear = d.currentYear;
         if (d.currentMonth) currentMonth = d.currentMonth;
+        if (d.lastDevice) localStorage.setItem('financeApp_lastDevice', d.lastDevice);
+        if (d.lastSyncAt) localStorage.setItem('financeApp_lastSyncAt', d.lastSyncAt);
         saveToStorage();
         document.getElementById('monthLabel').textContent =
           `${currentYear} / ${String(currentMonth).padStart(2,'0')}`;
-        document.getElementById('incomeInput').value = getMonthData().income;
+        document.getElementById('incomeInput').value = getMonthData().income || '';
         [0,1,2,3].forEach(i => document.getElementById('pct'+i).value = getMonthData().pcts[i]);
         const nowK = `${new Date().getFullYear()}-${String(new Date().getMonth()+1).padStart(2,'0')}`;
         document.getElementById('historyTag').textContent = monthKey() === nowK ? '本月' : '歷史';
