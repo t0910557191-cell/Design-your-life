@@ -214,10 +214,28 @@ header{background:var(--paper);border-bottom:2px solid var(--border);padding:20p
 <!-- ===== MONTHLY TODO ===== -->
 <div class="page-section active" id="sec-todo">
   <div style="height:4px"></div>
-  <div class="mnav">
+  <div class="mnav" style="position:relative;">
     <button class="mnav-btn" onclick="changeMonth(-1)">&#8249;</button>
-    <div class="mnav-label" id="todoMonthLabel"></div>
+    <div class="mnav-label" id="todoMonthLabel" onclick="openTodoJump()" style="cursor:pointer;" title="點擊跳到指定月份"></div>
     <button class="mnav-btn" onclick="changeMonth(1)">&#8250;</button>
+    <!-- 月份跳轉 popup -->
+    <div id="todoJumpPop" style="display:none;position:absolute;top:44px;left:50%;transform:translateX(-50%);z-index:100;background:var(--paper);border:1.5px solid var(--border);border-radius:13px;padding:13px 15px;box-shadow:0 6px 24px rgba(44,36,22,0.15);width:240px;">
+      <div style="font-family:'Caveat',cursive;font-size:13px;color:var(--accent);font-weight:600;margin-bottom:8px;">跳到指定月份</div>
+      <div style="display:flex;gap:7px;margin-bottom:10px;">
+        <input id="todoJumpYear" type="number" min="2000" max="2099" placeholder="年" style="flex:1;background:var(--cream2);border:1.5px solid var(--border);border-radius:8px;color:var(--ink);font-family:'DM Sans',sans-serif;font-size:13px;padding:7px 8px;outline:none;"/>
+        <select id="todoJumpMonth" style="flex:1;background:var(--cream2);border:1.5px solid var(--border);border-radius:8px;color:var(--ink);font-family:'DM Sans',sans-serif;font-size:13px;padding:7px 6px;outline:none;">
+          <option value="1">01月</option><option value="2">02月</option><option value="3">03月</option>
+          <option value="4">04月</option><option value="5">05月</option><option value="6">06月</option>
+          <option value="7">07月</option><option value="8">08月</option><option value="9">09月</option>
+          <option value="10">10月</option><option value="11">11月</option><option value="12">12月</option>
+        </select>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button onclick="closeTodoJump()" style="flex:1;background:none;border:1.5px solid var(--border);border-radius:8px;color:var(--ink3);font-family:'Caveat',cursive;font-size:14px;padding:7px;cursor:pointer;">取消</button>
+        <button onclick="applyTodoJump()" style="flex:2;background:var(--accent);border:none;border-radius:8px;color:#fff;font-family:'Caveat',cursive;font-size:14px;font-weight:600;padding:7px;cursor:pointer;">確定跳過去</button>
+      </div>
+    </div>
+  </div>
   </div>
   <div class="add-row">
     <button class="add-main-btn" onclick="toggleForm('todoForm')">＋ 新增本月目標</button>
@@ -332,10 +350,19 @@ header{background:var(--paper);border-bottom:2px solid var(--border);padding:20p
 <!-- ===== DIARY ===== -->
 <div class="page-section" id="sec-diary">
   <div style="height:4px"></div>
-  <div class="mnav">
+  <div class="mnav" style="position:relative;">
     <button class="mnav-btn" onclick="changeDiaryDate(-1)">&#8249;</button>
-    <div class="mnav-label" id="diaryDateLabel"></div>
+    <div class="mnav-label" id="diaryDateLabel" onclick="openDiaryJump()" style="cursor:pointer;" title="點擊跳到指定日期"></div>
     <button class="mnav-btn" onclick="changeDiaryDate(1)">&#8250;</button>
+    <!-- 日期跳轉 popup -->
+    <div id="diaryJumpPop" style="display:none;position:absolute;top:44px;left:50%;transform:translateX(-50%);z-index:100;background:var(--paper);border:1.5px solid var(--border);border-radius:13px;padding:13px 15px;box-shadow:0 6px 24px rgba(44,36,22,0.15);width:260px;">
+      <div style="font-family:'Caveat',cursive;font-size:13px;color:var(--accent);font-weight:600;margin-bottom:8px;">跳到指定日期</div>
+      <input id="diaryJumpInput" type="date" style="width:100%;background:var(--cream2);border:1.5px solid var(--border);border-radius:8px;color:var(--ink);font-family:'DM Sans',sans-serif;font-size:13px;padding:8px 10px;outline:none;margin-bottom:10px;"/>
+      <div style="display:flex;gap:8px;">
+        <button onclick="closeDiaryJump()" style="flex:1;background:none;border:1.5px solid var(--border);border-radius:8px;color:var(--ink3);font-family:'Caveat',cursive;font-size:14px;padding:7px;cursor:pointer;">取消</button>
+        <button onclick="applyDiaryJump()" style="flex:2;background:var(--accent);border:none;border-radius:8px;color:#fff;font-family:'Caveat',cursive;font-size:14px;font-weight:600;padding:7px;cursor:pointer;">確定跳過去</button>
+      </div>
+    </div>
   </div>
   <div class="card" style="padding:0;overflow:hidden;">
     <div id="photoStrip" style="display:none;position:relative;">
@@ -600,6 +627,8 @@ async function dylPushSilent() {
     });
     var json = await res.json();
     if (json.ok) {
+      localStorage.setItem('dyl_lastDevice', getDeviceInfo());
+      localStorage.setItem('dyl_lastSyncAt', new Date().toISOString());
       setDylStatus('✓ ' + new Date().toLocaleTimeString('zh-TW', {hour:'2-digit',minute:'2-digit'}) + ' 已同步');
       setTimeout(function(){ setDylStatus(''); }, 4000);
     } else {
@@ -624,8 +653,14 @@ async function dylPush() {
     });
     var json = await res.json();
     var el = document.getElementById('dylSyncMsg');
-    if (json.ok) { el.textContent = '✓ 已上傳到 Google Sheets！'; el.style.color = '#7ab5d4'; }
-    else { el.textContent = '✗ 失敗：' + (json.error||'未知錯誤'); el.style.color = 'var(--accent)'; }
+    if (json.ok) {
+      var now = new Date().toISOString();
+      localStorage.setItem('dyl_lastDevice', getDeviceInfo());
+      localStorage.setItem('dyl_lastSyncAt', now);
+      el.textContent = '✓ 已上傳到 Google Sheets！'; el.style.color = '#7ab5d4';
+    } else {
+      el.textContent = '✗ 失敗：' + (json.error||'未知錯誤'); el.style.color = 'var(--accent)';
+    }
   } catch(e) {
     document.getElementById('dylSyncMsg').textContent = '✗ 連線失敗，請確認網址';
   }
@@ -1186,7 +1221,57 @@ function loadDiaryUI() {
   renderDiaryList();
   updateBottomBar();
 }
-// ── 照片壓縮工具 ──────────────────────────────
+// ── 日記日期跳轉 ──────────────────────────────
+function openDiaryJump() {
+  var pop = document.getElementById('diaryJumpPop');
+  document.getElementById('diaryJumpInput').value = dk(diaryDate);
+  pop.style.display = 'block';
+  setTimeout(function(){ document.addEventListener('click', closeDiaryJumpOutside); }, 10);
+}
+function closeDiaryJump() {
+  document.getElementById('diaryJumpPop').style.display = 'none';
+  document.removeEventListener('click', closeDiaryJumpOutside);
+}
+function closeDiaryJumpOutside(e) {
+  var pop = document.getElementById('diaryJumpPop');
+  if (pop && !pop.contains(e.target) && e.target.id !== 'diaryDateLabel') closeDiaryJump();
+}
+function applyDiaryJump() {
+  var val = document.getElementById('diaryJumpInput').value;
+  if (!val) return;
+  var parts = val.split('-');
+  var d = new Date(parseInt(parts[0]), parseInt(parts[1])-1, parseInt(parts[2]));
+  if (isNaN(d.getTime())) return;
+  diaryDate = d;
+  closeDiaryJump();
+  loadDiaryUI();
+}
+
+// ── 月計劃月份跳轉 ────────────────────────────
+function openTodoJump() {
+  var pop = document.getElementById('todoJumpPop');
+  document.getElementById('todoJumpYear').value = todoYear;
+  document.getElementById('todoJumpMonth').value = todoMonth;
+  pop.style.display = 'block';
+  setTimeout(function(){ document.addEventListener('click', closeTodoJumpOutside); }, 10);
+}
+function closeTodoJump() {
+  document.getElementById('todoJumpPop').style.display = 'none';
+  document.removeEventListener('click', closeTodoJumpOutside);
+}
+function closeTodoJumpOutside(e) {
+  var pop = document.getElementById('todoJumpPop');
+  if (pop && !pop.contains(e.target) && e.target.id !== 'todoMonthLabel') closeTodoJump();
+}
+function applyTodoJump() {
+  var y = parseInt(document.getElementById('todoJumpYear').value);
+  var m = parseInt(document.getElementById('todoJumpMonth').value);
+  if (!y || y < 2000 || y > 2099) return;
+  todoYear = y; todoMonth = m;
+  document.getElementById('todoMonthLabel').textContent = mk(todoYear, todoMonth).replace('-', ' / ');
+  closeTodoJump();
+  renderTodos();
+}
 function compressImage(file, maxPx, quality, callback) {
   var reader = new FileReader();
   reader.onload = function(ev) {
