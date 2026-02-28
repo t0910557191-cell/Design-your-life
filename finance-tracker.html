@@ -21,13 +21,22 @@
     --blue: #6a9fcf; --purple: #a07ab0;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  html { overflow-x: hidden; }
+  html {
+    overflow-x: hidden;
+    overscroll-behavior: none;
+    height: 100%;
+  }
   body {
     background: var(--bg); color: var(--text);
     font-family: 'Noto Serif TC', serif;
-    min-height: 100vh; padding: 0 0 100px;
+    min-height: 100vh; min-height: 100dvh;
+    padding: 0 0 100px;
     max-width: 480px; margin: 0 auto;
-    overflow-x: hidden; -webkit-overflow-scrolling: touch;
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: contain;
+    touch-action: pan-y;
   }
 
   /* ── Header ── */

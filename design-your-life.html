@@ -12,8 +12,22 @@
 <style>
 :root{--cream:#faf6ef;--cream2:#f3ede2;--paper:#fffdf9;--ink:#2c2416;--ink2:#5a4e3a;--ink3:#9a8c75;--border:#ddd4c0;--border2:#ccc0a8;--accent:#c4784a;--accent2:#a85e32;--accentbg:#fdf0e8;--r:14px;--shadow:0 2px 16px rgba(44,36,22,0.08);}
 *{box-sizing:border-box;margin:0;padding:0;}
-html{overflow-x:hidden;}
-body{background:var(--cream);color:var(--ink);font-family:'DM Sans',sans-serif;min-height:100vh;max-width:520px;margin:0 auto;padding:0 0 110px;overflow-x:hidden;-webkit-overflow-scrolling:touch;}
+html{
+  overflow-x:hidden;
+  /* 防止 iOS Safari 橡皮筋效果造成頁面跳動 */
+  overscroll-behavior:none;
+  height:100%;
+}
+body{
+  background:var(--cream);color:var(--ink);font-family:'DM Sans',sans-serif;
+  min-height:100vh;min-height:100dvh; /* dvh = dynamic viewport height，不含網址列 */
+  max-width:520px;margin:0 auto;padding:0 0 110px;
+  overflow-x:hidden;
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior-y:contain; /* 防止上下滑到底時整頁跳動 */
+  touch-action:pan-y; /* 只允許上下滑，鎖住左右 */
+}
 body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");opacity:.7;}
 header{background:var(--paper);border-bottom:2px solid var(--border);padding:20px 20px 14px;position:sticky;top:0;z-index:50;box-shadow:0 2px 20px rgba(44,36,22,.06);}
 .header-title{font-family:'Playfair Display',serif;font-size:24px;font-weight:700;letter-spacing:-.5px;color:var(--ink);margin-bottom:1px;}
@@ -861,30 +875,40 @@ function setTodoFilter(cat, el) {
   renderTodos();
 }
 // ── Sort helper ───────────────────────────────
-var PRIO_ORDER = { 'high': 0, 'mid': 1, 'low': 2 };
+var PRIO_ORDER = { 'high': 1, 'mid': 2, 'low': 3 };
 var CAT_ORDER  = ['工作','自學','閱讀','興趣','旅遊','其他'];
+
 function applySortOrder(items, sortKey) {
-  var arr = items.slice(); // shallow copy, don't mutate original
+  var arr = items.slice();
   if (sortKey === 'default') return arr;
   arr.sort(function(a, b) {
     switch (sortKey) {
-      case 'prio-desc': return (PRIO_ORDER[a.prio]||1) - (PRIO_ORDER[b.prio]||1);
-      case 'prio-asc':  return (PRIO_ORDER[b.prio]||1) - (PRIO_ORDER[a.prio]||1);
-      case 'cat':       return CAT_ORDER.indexOf(a.cat) - CAT_ORDER.indexOf(b.cat);
-      case 'progress-desc': return (b.progress||0) - (a.progress||0);
-      case 'progress-asc':  return (a.progress||0) - (b.progress||0);
+      case 'prio-desc':
+        return (PRIO_ORDER[a.prio] || 9) - (PRIO_ORDER[b.prio] || 9);
+      case 'prio-asc':
+        return (PRIO_ORDER[b.prio] || 9) - (PRIO_ORDER[a.prio] || 9);
+      case 'cat': {
+        var ia = CAT_ORDER.indexOf(a.cat); var ib = CAT_ORDER.indexOf(b.cat);
+        return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib);
+      }
+      case 'progress-desc':
+        return (b.progress || 0) - (a.progress || 0);
+      case 'progress-asc':
+        return (a.progress || 0) - (b.progress || 0);
       case 'date-asc': {
-        var da = a.date || a.deadline || '9999';
-        var db = b.date || b.deadline || '9999';
+        var da = a.date || a.deadline || '9999-99-99';
+        var db = b.date || b.deadline || '9999-99-99';
         return da < db ? -1 : da > db ? 1 : 0;
       }
       case 'date-desc': {
-        var da2 = a.date || a.deadline || '0000';
-        var db2 = b.date || b.deadline || '0000';
+        var da2 = a.date || a.deadline || '0000-00-00';
+        var db2 = b.date || b.deadline || '0000-00-00';
         return da2 > db2 ? -1 : da2 < db2 ? 1 : 0;
       }
-      case 'title-asc':  return a.title.localeCompare(b.title, 'zh-TW');
-      case 'title-desc': return b.title.localeCompare(a.title, 'zh-TW');
+      case 'title-asc':
+        return (a.title || '').localeCompare(b.title || '', 'zh-TW');
+      case 'title-desc':
+        return (b.title || '').localeCompare(a.title || '', 'zh-TW');
       default: return 0;
     }
   });
@@ -1709,7 +1733,7 @@ function exportData() {
 
 // ── Drag progress tracks ──────────────────────
 (function() {
-  var dragging = null; // { track, id, type }
+  var dragging = null; // { track, id, type, startX }
 
   function pctFromEvent(track, clientX) {
     var r = track.getBoundingClientRect();
@@ -1717,66 +1741,44 @@ function exportData() {
   }
 
   function applyProgress(type, id, pct) {
-    if (type === 'todo') {
-      updateTodoProgress(id, pct);
-    } else {
-      updateProgress(id, pct);
-    }
+    if (type === 'todo') updateTodoProgress(id, pct);
+    else updateProgress(id, pct);
   }
 
-  function liveUpdate(track, pct, type) {
-    // Visually update without re-render for smooth drag
-    var fill = track.querySelector('.todo-prog-fill, .yg-fill');
+  function liveUpdate(track, pct) {
+    var fill  = track.querySelector('.todo-prog-fill, .yg-fill');
     var label = track.parentNode.querySelector('.prog-pct-label');
-    if (fill) fill.style.width = pct + '%';
+    if (fill)  fill.style.width = pct + '%';
     if (label) label.textContent = pct + '%';
   }
 
-  document.addEventListener('mousedown', function(e) {
+  // 只在 track 本身綁定 pointerdown，避免影響其他元素
+  document.addEventListener('pointerdown', function(e) {
     var track = e.target.closest('.draggable-track');
     if (!track) return;
-    e.preventDefault();
-    var id = parseInt(track.getAttribute('data-id'));
-    var type = track.getAttribute('data-type');
-    dragging = { track: track, id: id, type: type };
-    var pct = pctFromEvent(track, e.clientX);
-    liveUpdate(track, pct, type);
+    // 不 preventDefault，讓 select / button 正常運作
+    track.setPointerCapture(e.pointerId);
+    dragging = {
+      track: track,
+      id: parseInt(track.getAttribute('data-id')),
+      type: track.getAttribute('data-type')
+    };
+    liveUpdate(track, pctFromEvent(track, e.clientX));
   });
 
-  document.addEventListener('mousemove', function(e) {
+  document.addEventListener('pointermove', function(e) {
     if (!dragging) return;
-    var pct = pctFromEvent(dragging.track, e.clientX);
-    liveUpdate(dragging.track, pct, dragging.type);
+    liveUpdate(dragging.track, pctFromEvent(dragging.track, e.clientX));
   });
 
-  document.addEventListener('mouseup', function(e) {
+  document.addEventListener('pointerup', function(e) {
     if (!dragging) return;
     var pct = pctFromEvent(dragging.track, e.clientX);
     applyProgress(dragging.type, dragging.id, pct);
     dragging = null;
   });
 
-  // Touch support
-  document.addEventListener('touchstart', function(e) {
-    var track = e.target.closest('.draggable-track');
-    if (!track) return;
-    var id = parseInt(track.getAttribute('data-id'));
-    var type = track.getAttribute('data-type');
-    dragging = { track: track, id: id, type: type };
-    var pct = pctFromEvent(track, e.touches[0].clientX);
-    liveUpdate(track, pct, type);
-  }, { passive: true });
-
-  document.addEventListener('touchmove', function(e) {
-    if (!dragging) return;
-    var pct = pctFromEvent(dragging.track, e.touches[0].clientX);
-    liveUpdate(dragging.track, pct, dragging.type);
-  }, { passive: true });
-
-  document.addEventListener('touchend', function(e) {
-    if (!dragging) return;
-    var pct = pctFromEvent(dragging.track, e.changedTouches[0].clientX);
-    applyProgress(dragging.type, dragging.id, pct);
+  document.addEventListener('pointercancel', function() {
     dragging = null;
   });
 })();
