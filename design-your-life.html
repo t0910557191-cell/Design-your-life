@@ -338,13 +338,18 @@ header{background:var(--paper);border-bottom:2px solid var(--border);padding:20p
     <button class="mnav-btn" onclick="changeDiaryDate(1)">&#8250;</button>
   </div>
   <div class="card" style="padding:0;overflow:hidden;">
-    <div id="photoStrip" style="display:none">
+    <div id="photoStrip" style="display:none;position:relative;">
       <img id="photoMain" class="diary-photo-main" src="" alt=""/>
-      <div class="diary-photo-thumbs" id="photoThumbs"></div>
-      <div style="padding:0 14px 8px">
-        <button onclick="document.getElementById('imgMore').click()" style="width:100%;background:var(--accentbg);border:1.5px solid var(--border);border-radius:9px;color:var(--accent);font-family:'Caveat',cursive;font-size:13px;padding:7px;cursor:pointer;">＋ 新增更多照片</button>
-        <input type="file" id="imgMore" accept="image/*" multiple style="display:none" onchange="handleImages(event)"/>
+      <!-- 左右切換指示點 -->
+      <div id="photoDots" style="position:absolute;bottom:10px;left:50%;transform:translateX(-50%);display:flex;gap:5px;"></div>
+      <!-- 右上角操作按鈕 -->
+      <button id="photoMenuBtn" onclick="togglePhotoMenu()" style="position:absolute;top:10px;right:10px;background:rgba(0,0,0,0.45);border:none;border-radius:20px;color:#fff;font-size:16px;padding:4px 10px;cursor:pointer;backdrop-filter:blur(4px);z-index:10;">⋯</button>
+      <!-- 浮出選單 -->
+      <div id="photoMenuPop" style="display:none;position:absolute;top:40px;right:10px;background:var(--paper);border:1.5px solid var(--border);border-radius:12px;box-shadow:0 4px 20px rgba(44,36,22,0.15);z-index:20;overflow:hidden;min-width:150px;">
+        <button onclick="photoMenuAdd()" style="width:100%;background:none;border:none;border-bottom:1px solid var(--border);color:var(--ink);font-family:'Caveat',cursive;font-size:15px;padding:12px 16px;cursor:pointer;text-align:left;">➕ 新增照片</button>
+        <button onclick="photoMenuDel()" style="width:100%;background:none;border:none;color:#e05050;font-family:'Caveat',cursive;font-size:15px;padding:12px 16px;cursor:pointer;text-align:left;">🗑 刪除此張</button>
       </div>
+      <input type="file" id="imgMore" accept="image/*" multiple style="display:none" onchange="handleImages(event)"/>
     </div>
     <div style="padding:14px">
       <div id="uploadArea" class="upload-area" onclick="document.getElementById('imgInput').click()">
@@ -490,6 +495,19 @@ function getDylScriptUrl() {
   return localStorage.getItem(DYL_SCRIPT_KEY) || '';
 }
 
+// ── 裝置資訊 ──────────────────────────────────
+function getDeviceInfo() {
+  var ua = navigator.userAgent;
+  var device = 'Unknown';
+  if (/iPhone/.test(ua)) device = '📱 iPhone';
+  else if (/iPad/.test(ua)) device = '📱 iPad';
+  else if (/Android/.test(ua)) device = '📱 Android';
+  else if (/Mac/.test(ua)) device = '💻 Mac';
+  else if (/Windows/.test(ua)) device = '💻 Windows';
+  else device = '🖥 電腦';
+  return device;
+}
+
 function setDylStatus(msg, color) {
   var el = document.getElementById('syncStatusDYL');
   var btn = document.getElementById('dylSyncBtn');
@@ -505,7 +523,16 @@ function setDylStatus(msg, color) {
 function openDylSyncModal() {
   var url = getDylScriptUrl();
   document.getElementById('dylScriptUrl').value = url;
-  document.getElementById('dylSyncMsg').textContent = '';
+  var lastDevice = localStorage.getItem('dyl_lastDevice') || '';
+  var lastTime   = localStorage.getItem('dyl_lastSyncAt') || '';
+  var info = '';
+  if (lastDevice && lastTime) {
+    var t = new Date(lastTime);
+    var tStr = t.toLocaleDateString('zh-TW') + ' ' + t.toLocaleTimeString('zh-TW', {hour:'2-digit', minute:'2-digit'});
+    info = '最後同步：' + lastDevice + '｜' + tStr;
+  }
+  document.getElementById('dylSyncMsg').textContent = info;
+  document.getElementById('dylSyncMsg').style.color = 'var(--ink3)';
   document.getElementById('dylSyncOverlay').style.display = 'flex';
 }
 function closeDylSyncModal() {
@@ -554,7 +581,9 @@ function buildSyncPayload() {
       todos:   appData.todos,
       yearly:  appData.yearly,
       diaries: diariesClean,
-      idCtr:   idCtr
+      idCtr:   idCtr,
+      lastDevice: getDeviceInfo(),
+      lastSyncAt: new Date().toISOString()
     }
   };
 }
@@ -610,7 +639,6 @@ function applyRemoteData(d) {
     for (var i = 0; i < keys.length; i++) {
       var k      = keys[i];
       var remote = d.diaries[k];
-      // 直接用雲端資料（包含 driveUrl），照片 URL 已包含在 images 陣列裡
       appData.diaries[k] = {
         mood: remote.mood, good1: remote.good1, good2: remote.good2,
         good3: remote.good3, text: remote.text, star: remote.star,
@@ -620,6 +648,9 @@ function applyRemoteData(d) {
     }
   }
   if (d.idCtr) idCtr = d.idCtr;
+  // 記錄最後同步的裝置資訊
+  if (d.lastDevice) localStorage.setItem('dyl_lastDevice', d.lastDevice);
+  if (d.lastSyncAt) localStorage.setItem('dyl_lastSyncAt', d.lastSyncAt);
 }
 
 async function dylPull() {
@@ -1223,42 +1254,92 @@ function handleImages(e) {
 function renderPhotoStrip() {
   var strip = document.getElementById('photoStrip');
   var ua    = document.getElementById('uploadArea');
-  if (!curImages.length) { strip.style.display = 'none'; ua.style.display = 'block'; return; }
+  if (!curImages.length) {
+    strip.style.display = 'none'; ua.style.display = 'block';
+    closePhotoMenu(); return;
+  }
   strip.style.display = 'block'; ua.style.display = 'none';
   if (curPhotoIdx >= curImages.length) curPhotoIdx = 0;
   var mainSrc = curImages[curPhotoIdx].driveUrl || curImages[curPhotoIdx].dataUrl || '';
   document.getElementById('photoMain').src = mainSrc;
-  var thumbHtml = '';
+
+  // 指示點
+  var dots = '';
   for (var i = 0; i < curImages.length; i++) {
-    var src = curImages[i].driveUrl || curImages[i].dataUrl || '';
-    var overlay = curImages[i].uploading ? '<div style="position:absolute;inset:0;background:rgba(0,0,0,0.4);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:9px;color:#fff">上傳中</div>' : '';
-    thumbHtml += '<div class="diary-thumb-wrap" style="position:relative;">'
-              + '<img class="diary-thumb' + (i === curPhotoIdx ? ' active' : '') + '" src="' + src + '" onclick="setPhoto(' + i + ')"/>'
-              + overlay
-              + '<button class="img-del" onclick="removePhoto(' + i + ')">✕</button></div>';
+    dots += '<div style="width:6px;height:6px;border-radius:50%;background:' + (i === curPhotoIdx ? '#fff' : 'rgba(255,255,255,0.45)') + ';transition:background .2s;"></div>';
   }
-  document.getElementById('photoThumbs').innerHTML = thumbHtml;
+  document.getElementById('photoDots').innerHTML = dots;
+  document.getElementById('photoDots').style.display = curImages.length > 1 ? 'flex' : 'none';
 }
 
 function setPhoto(i) { curPhotoIdx = i; renderPhotoStrip(); }
 
-function removePhoto(i) {
-  var img = curImages[i];
-  // 如果有 Drive fileId，靜默刪除
+function togglePhotoMenu() {
+  var pop = document.getElementById('photoMenuPop');
+  pop.style.display = pop.style.display === 'none' ? 'block' : 'none';
+}
+function closePhotoMenu() {
+  var pop = document.getElementById('photoMenuPop');
+  if (pop) pop.style.display = 'none';
+}
+function photoMenuAdd() {
+  closePhotoMenu();
+  document.getElementById('imgMore').click();
+}
+function photoMenuDel() {
+  closePhotoMenu();
+  var img = curImages[curPhotoIdx];
   if (img && img.fileId) {
     var scriptUrl = getDylScriptUrl();
     if (scriptUrl) {
       fetch(scriptUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/plain' },
+        method: 'POST', headers: { 'Content-Type': 'text/plain' },
         body: JSON.stringify({ action: 'deletePhoto', fileId: img.fileId })
       }).catch(function(){});
     }
   }
-  curImages.splice(i, 1);
+  curImages.splice(curPhotoIdx, 1);
   if (curPhotoIdx >= curImages.length) curPhotoIdx = Math.max(0, curImages.length - 1);
   renderPhotoStrip();
 }
+
+function removePhoto(i) { curPhotoIdx = i; photoMenuDel(); }
+
+// 大圖左右滑動切換
+(function() {
+  var startX = 0, dragging = false;
+  function onStart(e) {
+    startX = (e.touches ? e.touches[0].clientX : e.clientX);
+    dragging = true;
+  }
+  function onEnd(e) {
+    if (!dragging) return; dragging = false;
+    var endX = (e.changedTouches ? e.changedTouches[0].clientX : e.clientX);
+    var diff = startX - endX;
+    if (Math.abs(diff) > 40 && curImages.length > 1) {
+      curPhotoIdx = diff > 0
+        ? (curPhotoIdx + 1) % curImages.length
+        : (curPhotoIdx - 1 + curImages.length) % curImages.length;
+      renderPhotoStrip();
+    }
+  }
+  document.addEventListener('DOMContentLoaded', function() {
+    var el = document.getElementById('photoMain');
+    if (!el) return;
+    el.addEventListener('touchstart', onStart, { passive: true });
+    el.addEventListener('touchend',   onEnd);
+    el.addEventListener('mousedown',  onStart);
+    el.addEventListener('mouseup',    onEnd);
+  });
+  // 點別的地方關閉選單
+  document.addEventListener('click', function(e) {
+    var btn = document.getElementById('photoMenuBtn');
+    var pop = document.getElementById('photoMenuPop');
+    if (pop && btn && !btn.contains(e.target) && !pop.contains(e.target)) {
+      pop.style.display = 'none';
+    }
+  });
+})();
 function pickMood(emoji, el) {
   curMood = emoji;
   document.querySelectorAll('.mood-btn').forEach(function(b){ b.classList.remove('selected'); });
