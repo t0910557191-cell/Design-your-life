@@ -228,28 +228,10 @@ header{background:var(--paper);border-bottom:2px solid var(--border);padding:20p
 <!-- ===== MONTHLY TODO ===== -->
 <div class="page-section active" id="sec-todo">
   <div style="height:4px"></div>
-  <div class="mnav" style="position:relative;">
+  <div class="mnav">
     <button class="mnav-btn" onclick="changeMonth(-1)">&#8249;</button>
     <div class="mnav-label" id="todoMonthLabel" onclick="openTodoJump()" style="cursor:pointer;" title="點擊跳到指定月份"></div>
     <button class="mnav-btn" onclick="changeMonth(1)">&#8250;</button>
-    <!-- 月份跳轉 popup -->
-    <div id="todoJumpPop" style="display:none;position:absolute;top:44px;left:50%;transform:translateX(-50%);z-index:100;background:var(--paper);border:1.5px solid var(--border);border-radius:13px;padding:13px 15px;box-shadow:0 6px 24px rgba(44,36,22,0.15);width:240px;">
-      <div style="font-family:'Caveat',cursive;font-size:13px;color:var(--accent);font-weight:600;margin-bottom:8px;">跳到指定月份</div>
-      <div style="display:flex;gap:7px;margin-bottom:10px;">
-        <input id="todoJumpYear" type="number" min="2000" max="2099" placeholder="年" style="flex:1;background:var(--cream2);border:1.5px solid var(--border);border-radius:8px;color:var(--ink);font-family:'DM Sans',sans-serif;font-size:13px;padding:7px 8px;outline:none;"/>
-        <select id="todoJumpMonth" style="flex:1;background:var(--cream2);border:1.5px solid var(--border);border-radius:8px;color:var(--ink);font-family:'DM Sans',sans-serif;font-size:13px;padding:7px 6px;outline:none;">
-          <option value="1">01月</option><option value="2">02月</option><option value="3">03月</option>
-          <option value="4">04月</option><option value="5">05月</option><option value="6">06月</option>
-          <option value="7">07月</option><option value="8">08月</option><option value="9">09月</option>
-          <option value="10">10月</option><option value="11">11月</option><option value="12">12月</option>
-        </select>
-      </div>
-      <div style="display:flex;gap:8px;">
-        <button onclick="closeTodoJump()" style="flex:1;background:none;border:1.5px solid var(--border);border-radius:8px;color:var(--ink3);font-family:'Caveat',cursive;font-size:14px;padding:7px;cursor:pointer;">取消</button>
-        <button onclick="applyTodoJump()" style="flex:2;background:var(--accent);border:none;border-radius:8px;color:#fff;font-family:'Caveat',cursive;font-size:14px;font-weight:600;padding:7px;cursor:pointer;">確定跳過去</button>
-      </div>
-    </div>
-  </div>
   </div>
   <div class="add-row">
     <button class="add-main-btn" onclick="toggleForm('todoForm')">＋ 新增本月目標</button>
@@ -307,7 +289,7 @@ header{background:var(--paper);border-bottom:2px solid var(--border);padding:20p
   <div style="height:4px"></div>
   <div class="mnav">
     <button class="mnav-btn" onclick="changeYear(-1)">&#8249;</button>
-    <div class="mnav-label" id="yearLabel"></div>
+    <div class="mnav-label" id="yearLabel" onclick="openYearlyJump()" style="cursor:pointer;" title="點擊跳到指定年份"></div>
     <button class="mnav-btn" onclick="changeYear(1)">&#8250;</button>
   </div>
   <div class="add-row">
@@ -364,19 +346,10 @@ header{background:var(--paper);border-bottom:2px solid var(--border);padding:20p
 <!-- ===== DIARY ===== -->
 <div class="page-section" id="sec-diary">
   <div style="height:4px"></div>
-  <div class="mnav" style="position:relative;">
+  <div class="mnav">
     <button class="mnav-btn" onclick="changeDiaryDate(-1)">&#8249;</button>
     <div class="mnav-label" id="diaryDateLabel" onclick="openDiaryJump()" style="cursor:pointer;" title="點擊跳到指定日期"></div>
     <button class="mnav-btn" onclick="changeDiaryDate(1)">&#8250;</button>
-    <!-- 日期跳轉 popup -->
-    <div id="diaryJumpPop" style="display:none;position:absolute;top:44px;left:50%;transform:translateX(-50%);z-index:100;background:var(--paper);border:1.5px solid var(--border);border-radius:13px;padding:13px 15px;box-shadow:0 6px 24px rgba(44,36,22,0.15);width:260px;">
-      <div style="font-family:'Caveat',cursive;font-size:13px;color:var(--accent);font-weight:600;margin-bottom:8px;">跳到指定日期</div>
-      <input id="diaryJumpInput" type="date" style="width:100%;background:var(--cream2);border:1.5px solid var(--border);border-radius:8px;color:var(--ink);font-family:'DM Sans',sans-serif;font-size:13px;padding:8px 10px;outline:none;margin-bottom:10px;"/>
-      <div style="display:flex;gap:8px;">
-        <button onclick="closeDiaryJump()" style="flex:1;background:none;border:1.5px solid var(--border);border-radius:8px;color:var(--ink3);font-family:'Caveat',cursive;font-size:14px;padding:7px;cursor:pointer;">取消</button>
-        <button onclick="applyDiaryJump()" style="flex:2;background:var(--accent);border:none;border-radius:8px;color:#fff;font-family:'Caveat',cursive;font-size:14px;font-weight:600;padding:7px;cursor:pointer;">確定跳過去</button>
-      </div>
-    </div>
   </div>
   <div class="card" style="padding:0;overflow:hidden;">
     <div id="photoStrip" style="display:none;position:relative;">
@@ -437,7 +410,7 @@ header{background:var(--paper);border-bottom:2px solid var(--border);padding:20p
   <div class="dash-sub active" id="dash-monthly">
     <div class="mnav">
       <button class="mnav-btn" onclick="changeDashMonth(-1)">&#8249;</button>
-      <div class="mnav-label" id="dashMonthLabel"></div>
+      <div class="mnav-label" id="dashMonthLabel" onclick="openDashMonthJump()" style="cursor:pointer;" title="點擊跳到指定月份"></div>
       <button class="mnav-btn" onclick="changeDashMonth(1)">&#8250;</button>
     </div>
     <div class="stat-row">
@@ -458,7 +431,7 @@ header{background:var(--paper);border-bottom:2px solid var(--border);padding:20p
   <div class="dash-sub" id="dash-yearly">
     <div class="mnav">
       <button class="mnav-btn" onclick="changeDashYear(-1)">&#8249;</button>
-      <div class="mnav-label" id="dashYearLabel"></div>
+      <div class="mnav-label" id="dashYearLabel" onclick="openDashYearJump()" style="cursor:pointer;" title="點擊跳到指定年份"></div>
       <button class="mnav-btn" onclick="changeDashYear(1)">&#8250;</button>
     </div>
     <div class="stat-row">
@@ -491,6 +464,101 @@ header{background:var(--paper);border-bottom:2px solid var(--border);padding:20p
   </div>
 </div>
 <div class="confetti-wrap" id="confettiWrap"></div>
+
+<!-- ── ALL JUMP POPUPS ── -->
+
+<!-- 月計劃 月份跳轉 -->
+<div id="todoJumpPop" style="display:none;position:fixed;inset:0;z-index:300;background:rgba(44,36,22,0.5);backdrop-filter:blur(3px);align-items:center;justify-content:center;" onclick="if(event.target===this)closeTodoJump()">
+  <div style="background:var(--paper);border:1.5px solid var(--border);border-radius:16px;padding:20px 20px 16px;width:88vw;max-width:300px;box-shadow:0 8px 32px rgba(44,36,22,0.2);">
+    <div style="font-family:'Caveat',cursive;font-size:14px;color:var(--accent);font-weight:600;margin-bottom:10px;">📋 跳到指定月份</div>
+    <div style="display:flex;gap:8px;margin-bottom:12px;">
+      <input id="todoJumpYear" type="number" min="2000" max="2099" placeholder="年份" style="flex:1;background:var(--cream2);border:1.5px solid var(--border);border-radius:9px;color:var(--ink);font-family:'DM Sans',sans-serif;font-size:14px;padding:10px;outline:none;"/>
+      <select id="todoJumpMonth" style="flex:1;background:var(--cream2);border:1.5px solid var(--border);border-radius:9px;color:var(--ink);font-family:'DM Sans',sans-serif;font-size:14px;padding:10px 8px;outline:none;">
+        <option value="1">01月</option><option value="2">02月</option><option value="3">03月</option>
+        <option value="4">04月</option><option value="5">05月</option><option value="6">06月</option>
+        <option value="7">07月</option><option value="8">08月</option><option value="9">09月</option>
+        <option value="10">10月</option><option value="11">11月</option><option value="12">12月</option>
+      </select>
+    </div>
+    <div style="display:flex;gap:8px;">
+      <button onclick="closeTodoJump()" style="flex:1;background:none;border:1.5px solid var(--border);border-radius:9px;color:var(--ink3);font-family:'Caveat',cursive;font-size:14px;padding:9px;cursor:pointer;">取消</button>
+      <button onclick="applyTodoJump()" style="flex:2;background:var(--accent);border:none;border-radius:9px;color:#fff;font-family:'Caveat',cursive;font-size:15px;font-weight:600;padding:9px;cursor:pointer;">確定跳過去</button>
+    </div>
+  </div>
+</div>
+
+<!-- 年度目標 年份跳轉 -->
+<div id="yearlyJumpPop" style="display:none;position:fixed;inset:0;z-index:300;background:rgba(44,36,22,0.5);backdrop-filter:blur(3px);align-items:center;justify-content:center;" onclick="if(event.target===this)closeYearlyJump()">
+  <div style="background:var(--paper);border:1.5px solid var(--border);border-radius:16px;padding:20px 20px 16px;width:88vw;max-width:300px;box-shadow:0 8px 32px rgba(44,36,22,0.2);">
+    <div style="font-family:'Caveat',cursive;font-size:14px;color:var(--accent);font-weight:600;margin-bottom:10px;">🎯 跳到指定年份</div>
+    <input id="yearlyJumpYear" type="number" min="2000" max="2099" placeholder="輸入年份，例如 2025" style="width:100%;background:var(--cream2);border:1.5px solid var(--border);border-radius:9px;color:var(--ink);font-family:'DM Sans',sans-serif;font-size:14px;padding:10px 12px;outline:none;margin-bottom:12px;"/>
+    <div style="display:flex;gap:8px;">
+      <button onclick="closeYearlyJump()" style="flex:1;background:none;border:1.5px solid var(--border);border-radius:9px;color:var(--ink3);font-family:'Caveat',cursive;font-size:14px;padding:9px;cursor:pointer;">取消</button>
+      <button onclick="applyYearlyJump()" style="flex:2;background:var(--accent);border:none;border-radius:9px;color:#fff;font-family:'Caveat',cursive;font-size:15px;font-weight:600;padding:9px;cursor:pointer;">確定跳過去</button>
+    </div>
+  </div>
+</div>
+
+<!-- 日記 日期跳轉 -->
+<div id="diaryJumpPop" style="display:none;position:fixed;inset:0;z-index:300;background:rgba(44,36,22,0.5);backdrop-filter:blur(3px);align-items:center;justify-content:center;" onclick="if(event.target===this)closeDiaryJump()">
+  <div style="background:var(--paper);border:1.5px solid var(--border);border-radius:16px;padding:20px 20px 16px;width:88vw;max-width:300px;box-shadow:0 8px 32px rgba(44,36,22,0.2);">
+    <div style="font-family:'Caveat',cursive;font-size:14px;color:var(--accent);font-weight:600;margin-bottom:12px;">📅 跳到指定日期</div>
+    <div style="display:flex;gap:6px;margin-bottom:14px;">
+      <input id="diaryJumpYear" type="number" min="2000" max="2099" placeholder="年" style="flex:2;background:var(--cream2);border:1.5px solid var(--border);border-radius:9px;color:var(--ink);font-family:'DM Sans',sans-serif;font-size:14px;padding:10px 8px;outline:none;"/>
+      <select id="diaryJumpMonth" style="flex:1.5;background:var(--cream2);border:1.5px solid var(--border);border-radius:9px;color:var(--ink);font-family:'DM Sans',sans-serif;font-size:14px;padding:10px 4px;outline:none;">
+        <option value="1">01</option><option value="2">02</option><option value="3">03</option>
+        <option value="4">04</option><option value="5">05</option><option value="6">06</option>
+        <option value="7">07</option><option value="8">08</option><option value="9">09</option>
+        <option value="10">10</option><option value="11">11</option><option value="12">12</option>
+      </select>
+      <select id="diaryJumpDay" style="flex:1.5;background:var(--cream2);border:1.5px solid var(--border);border-radius:9px;color:var(--ink);font-family:'DM Sans',sans-serif;font-size:14px;padding:10px 4px;outline:none;">
+        <option value="1">01</option><option value="2">02</option><option value="3">03</option><option value="4">04</option><option value="5">05</option>
+        <option value="6">06</option><option value="7">07</option><option value="8">08</option><option value="9">09</option><option value="10">10</option>
+        <option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option>
+        <option value="16">16</option><option value="17">17</option><option value="18">18</option><option value="19">19</option><option value="20">20</option>
+        <option value="21">21</option><option value="22">22</option><option value="23">23</option><option value="24">24</option><option value="25">25</option>
+        <option value="26">26</option><option value="27">27</option><option value="28">28</option><option value="29">29</option><option value="30">30</option>
+        <option value="31">31</option>
+      </select>
+    </div>
+    <div style="display:flex;gap:8px;">
+      <button onclick="closeDiaryJump()" style="flex:1;background:none;border:1.5px solid var(--border);border-radius:9px;color:var(--ink3);font-family:'Caveat',cursive;font-size:14px;padding:9px;cursor:pointer;">取消</button>
+      <button onclick="applyDiaryJump()" style="flex:2;background:var(--accent);border:none;border-radius:9px;color:#fff;font-family:'Caveat',cursive;font-size:15px;font-weight:600;padding:9px;cursor:pointer;">確定跳過去</button>
+    </div>
+  </div>
+</div>
+
+<!-- 統計 月份跳轉 -->
+<div id="dashMonthJumpPop" style="display:none;position:fixed;inset:0;z-index:300;background:rgba(44,36,22,0.5);backdrop-filter:blur(3px);align-items:center;justify-content:center;" onclick="if(event.target===this)closeDashMonthJump()">
+  <div style="background:var(--paper);border:1.5px solid var(--border);border-radius:16px;padding:20px 20px 16px;width:88vw;max-width:300px;box-shadow:0 8px 32px rgba(44,36,22,0.2);">
+    <div style="font-family:'Caveat',cursive;font-size:14px;color:var(--accent);font-weight:600;margin-bottom:10px;">📋 統計跳到指定月份</div>
+    <div style="display:flex;gap:8px;margin-bottom:12px;">
+      <input id="dashMonthJumpYear" type="number" min="2000" max="2099" placeholder="年份" style="flex:1;background:var(--cream2);border:1.5px solid var(--border);border-radius:9px;color:var(--ink);font-family:'DM Sans',sans-serif;font-size:14px;padding:10px;outline:none;"/>
+      <select id="dashMonthJumpMonth" style="flex:1;background:var(--cream2);border:1.5px solid var(--border);border-radius:9px;color:var(--ink);font-family:'DM Sans',sans-serif;font-size:14px;padding:10px 8px;outline:none;">
+        <option value="1">01月</option><option value="2">02月</option><option value="3">03月</option>
+        <option value="4">04月</option><option value="5">05月</option><option value="6">06月</option>
+        <option value="7">07月</option><option value="8">08月</option><option value="9">09月</option>
+        <option value="10">10月</option><option value="11">11月</option><option value="12">12月</option>
+      </select>
+    </div>
+    <div style="display:flex;gap:8px;">
+      <button onclick="closeDashMonthJump()" style="flex:1;background:none;border:1.5px solid var(--border);border-radius:9px;color:var(--ink3);font-family:'Caveat',cursive;font-size:14px;padding:9px;cursor:pointer;">取消</button>
+      <button onclick="applyDashMonthJump()" style="flex:2;background:var(--accent);border:none;border-radius:9px;color:#fff;font-family:'Caveat',cursive;font-size:15px;font-weight:600;padding:9px;cursor:pointer;">確定跳過去</button>
+    </div>
+  </div>
+</div>
+
+<!-- 統計 年份跳轉 -->
+<div id="dashYearJumpPop" style="display:none;position:fixed;inset:0;z-index:300;background:rgba(44,36,22,0.5);backdrop-filter:blur(3px);align-items:center;justify-content:center;" onclick="if(event.target===this)closeDashYearJump()">
+  <div style="background:var(--paper);border:1.5px solid var(--border);border-radius:16px;padding:20px 20px 16px;width:88vw;max-width:300px;box-shadow:0 8px 32px rgba(44,36,22,0.2);">
+    <div style="font-family:'Caveat',cursive;font-size:14px;color:var(--accent);font-weight:600;margin-bottom:10px;">🎯 統計跳到指定年份</div>
+    <input id="dashYearJumpYear" type="number" min="2000" max="2099" placeholder="輸入年份，例如 2025" style="width:100%;background:var(--cream2);border:1.5px solid var(--border);border-radius:9px;color:var(--ink);font-family:'DM Sans',sans-serif;font-size:14px;padding:10px 12px;outline:none;margin-bottom:12px;"/>
+    <div style="display:flex;gap:8px;">
+      <button onclick="closeDashYearJump()" style="flex:1;background:none;border:1.5px solid var(--border);border-radius:9px;color:var(--ink3);font-family:'Caveat',cursive;font-size:14px;padding:9px;cursor:pointer;">取消</button>
+      <button onclick="applyDashYearJump()" style="flex:2;background:var(--accent);border:none;border-radius:9px;color:#fff;font-family:'Caveat',cursive;font-size:15px;font-weight:600;padding:9px;cursor:pointer;">確定跳過去</button>
+    </div>
+  </div>
+</div>
 
 <!-- ── SYNC MODAL ── -->
 <div id="dylSyncOverlay" onclick="if(event.target===this)closeDylSyncModal()" style="display:none;position:fixed;inset:0;background:rgba(44,36,22,0.45);backdrop-filter:blur(4px);z-index:200;align-items:flex-end;justify-content:center;">
@@ -1245,26 +1313,54 @@ function loadDiaryUI() {
   renderDiaryList();
   updateBottomBar();
 }
+// ── 共用：開啟/關閉 overlay modal ────────────
+function openJumpModal(id) {
+  var el = document.getElementById(id);
+  if (el) el.style.display = 'flex';
+}
+function closeJumpModal(id) {
+  var el = document.getElementById(id);
+  if (el) el.style.display = 'none';
+}
+
+// ── 年度目標年份跳轉 ──────────────────────────
+function openYearlyJump() {
+  document.getElementById('yearlyJumpYear').value = goalYear;
+  openJumpModal('yearlyJumpPop');
+}
+function closeYearlyJump() { closeJumpModal('yearlyJumpPop'); }
+function closeYearlyJumpOutside(e) {
+  var pop = document.getElementById('yearlyJumpPop');
+  if (pop && !pop.contains(e.target) && e.target.id !== 'yearLabel') closeYearlyJump();
+}
+function applyYearlyJump() {
+  var y = parseInt(document.getElementById('yearlyJumpYear').value);
+  if (!y || y < 2000 || y > 2099) return;
+  goalYear = y;
+  document.getElementById('yearLabel').textContent = String(goalYear);
+  closeYearlyJump();
+  renderYearly();
+}
+
 // ── 日記日期跳轉 ──────────────────────────────
 function openDiaryJump() {
-  var pop = document.getElementById('diaryJumpPop');
-  document.getElementById('diaryJumpInput').value = dk(diaryDate);
-  pop.style.display = 'block';
-  setTimeout(function(){ document.addEventListener('click', closeDiaryJumpOutside); }, 10);
+  var d = diaryDate instanceof Date ? diaryDate : new Date();
+  document.getElementById('diaryJumpYear').value  = d.getFullYear();
+  document.getElementById('diaryJumpMonth').value = d.getMonth() + 1;
+  document.getElementById('diaryJumpDay').value   = d.getDate();
+  openJumpModal('diaryJumpPop');
 }
-function closeDiaryJump() {
-  document.getElementById('diaryJumpPop').style.display = 'none';
-  document.removeEventListener('click', closeDiaryJumpOutside);
-}
+function closeDiaryJump() { closeJumpModal('diaryJumpPop'); }
 function closeDiaryJumpOutside(e) {
   var pop = document.getElementById('diaryJumpPop');
   if (pop && !pop.contains(e.target) && e.target.id !== 'diaryDateLabel') closeDiaryJump();
 }
 function applyDiaryJump() {
-  var val = document.getElementById('diaryJumpInput').value;
-  if (!val) return;
-  var parts = val.split('-');
-  var d = new Date(parseInt(parts[0]), parseInt(parts[1])-1, parseInt(parts[2]));
+  var y = parseInt(document.getElementById('diaryJumpYear').value);
+  var m = parseInt(document.getElementById('diaryJumpMonth').value);
+  var day = parseInt(document.getElementById('diaryJumpDay').value);
+  if (!y || y < 2000 || y > 2099) return;
+  var d = new Date(y, m - 1, day);
   if (isNaN(d.getTime())) return;
   diaryDate = d;
   closeDiaryJump();
@@ -1273,16 +1369,11 @@ function applyDiaryJump() {
 
 // ── 月計劃月份跳轉 ────────────────────────────
 function openTodoJump() {
-  var pop = document.getElementById('todoJumpPop');
   document.getElementById('todoJumpYear').value = todoYear;
   document.getElementById('todoJumpMonth').value = todoMonth;
-  pop.style.display = 'block';
-  setTimeout(function(){ document.addEventListener('click', closeTodoJumpOutside); }, 10);
+  openJumpModal('todoJumpPop');
 }
-function closeTodoJump() {
-  document.getElementById('todoJumpPop').style.display = 'none';
-  document.removeEventListener('click', closeTodoJumpOutside);
-}
+function closeTodoJump() { closeJumpModal('todoJumpPop'); }
 function closeTodoJumpOutside(e) {
   var pop = document.getElementById('todoJumpPop');
   if (pop && !pop.contains(e.target) && e.target.id !== 'todoMonthLabel') closeTodoJump();
@@ -1295,6 +1386,38 @@ function applyTodoJump() {
   document.getElementById('todoMonthLabel').textContent = mk(todoYear, todoMonth).replace('-', ' / ');
   closeTodoJump();
   renderTodos();
+}
+
+// ── 統計月份跳轉 ──────────────────────────────
+function openDashMonthJump() {
+  document.getElementById('dashMonthJumpYear').value = dashMY;
+  document.getElementById('dashMonthJumpMonth').value = dashMM;
+  openJumpModal('dashMonthJumpPop');
+}
+function closeDashMonthJump() { closeJumpModal('dashMonthJumpPop'); }
+function applyDashMonthJump() {
+  var y = parseInt(document.getElementById('dashMonthJumpYear').value);
+  var m = parseInt(document.getElementById('dashMonthJumpMonth').value);
+  if (!y || y < 2000 || y > 2099) return;
+  dashMY = y; dashMM = m;
+  document.getElementById('dashMonthLabel').textContent = mk(dashMY, dashMM).replace('-', ' / ');
+  closeDashMonthJump();
+  updateDash();
+}
+
+// ── 統計年份跳轉 ──────────────────────────────
+function openDashYearJump() {
+  document.getElementById('dashYearJumpYear').value = dashYV;
+  openJumpModal('dashYearJumpPop');
+}
+function closeDashYearJump() { closeJumpModal('dashYearJumpPop'); }
+function applyDashYearJump() {
+  var y = parseInt(document.getElementById('dashYearJumpYear').value);
+  if (!y || y < 2000 || y > 2099) return;
+  dashYV = y;
+  document.getElementById('dashYearLabel').textContent = String(dashYV);
+  closeDashYearJump();
+  updateDash();
 }
 function compressImage(file, maxPx, quality, callback) {
   var reader = new FileReader();
