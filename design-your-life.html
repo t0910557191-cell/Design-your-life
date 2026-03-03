@@ -381,14 +381,17 @@ input[type="date"].form-input{padding:7px 8px;font-size:12px;}
       <button id="photoMenuBtn" onclick="togglePhotoMenu()" style="position:absolute;top:10px;right:10px;background:rgba(0,0,0,0.45);border:none;border-radius:20px;color:#fff;font-size:16px;padding:4px 10px;cursor:pointer;backdrop-filter:blur(4px);z-index:10;">⋯</button>
       <!-- 浮出選單 -->
       <div id="photoMenuPop" style="display:none;position:absolute;top:40px;right:10px;background:var(--paper);border:1.5px solid var(--border);border-radius:12px;box-shadow:0 4px 20px rgba(44,36,22,0.15);z-index:20;overflow:hidden;min-width:150px;">
-        <button onclick="photoMenuAdd()" style="width:100%;background:none;border:none;border-bottom:1px solid var(--border);color:var(--ink);font-family:'Caveat',cursive;font-size:15px;padding:12px 16px;cursor:pointer;text-align:left;">➕ 新增照片</button>
+        <label onclick="closePhotoMenu()" style="display:block;width:100%;border-bottom:1px solid var(--border);color:var(--ink);font-family:'Caveat',cursive;font-size:15px;padding:12px 16px;cursor:pointer;text-align:left;box-sizing:border-box;">➕ 新增照片
+          <input type="file" id="imgMore" accept="image/*" multiple style="opacity:0;width:0;height:0;position:absolute;" onchange="handleImages(event)"/>
+        </label>
         <button onclick="photoMenuDel()" style="width:100%;background:none;border:none;color:#e05050;font-family:'Caveat',cursive;font-size:15px;padding:12px 16px;cursor:pointer;text-align:left;">🗑 刪除此張</button>
       </div>
     </div>
     <div style="padding:14px">
-      <div id="uploadArea" class="upload-area" onclick="document.getElementById('imgInput').click()">
-        <div class="upload-label">📷 點擊上傳照片（顯示在日記頂端）</div>
-      </div>
+      <label id="uploadArea" class="upload-area" style="display:block;cursor:pointer;">
+        <span class="upload-label">📷 點擊上傳照片（顯示在日記頂端）</span>
+        <input type="file" id="imgInput" accept="image/*" multiple style="opacity:0;width:0;height:0;position:absolute;" onchange="handleImages(event)"/>
+      </label>
       <div class="field-label">今天心情</div>
       <div class="mood-row">
         <button class="mood-btn" onclick="pickMood('😊',this)">😊</button>
@@ -415,10 +418,6 @@ input[type="date"].form-input{padding:7px 8px;font-size:12px;}
     </div>
   </div>
   </div><!-- /diary-collapsible -->
-
-  <!-- file inputs 放在收合區外，永遠存在 DOM -->
-  <input type="file" id="imgInput" accept="image/*" multiple style="display:none" onchange="handleImages(event)"/>
-  <input type="file" id="imgMore"  accept="image/*" multiple style="display:none" onchange="handleImages(event)"/>
 
   <!-- 過去的日記縮圖牆 -->
   <div class="diary-toggle-row" style="margin-top:6px;">
@@ -1477,41 +1476,42 @@ function handleImages(e) {
   var files = Array.from(e.target.files);
   var scriptUrl = getDylScriptUrl();
   files.forEach(function(file) {
-    compressImage(file, 800, 0.75, function(dataUrl) {
-      var imgObj = { dataUrl: dataUrl, name: file.name, driveUrl: null, fileId: null, uploading: !!scriptUrl };
-      curImages.push(imgObj);
-      renderPhotoStrip();
-      // 如果有設定 script URL，立即上傳到 Drive
-      if (scriptUrl) {
-        var idx = curImages.indexOf(imgObj);
-        var base64 = dataUrl.split(',')[1];
-        var dateStr = dk(diaryDate);
-        fetch(scriptUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'text/plain' },
-          body: JSON.stringify({
-            action: 'uploadPhoto',
-            date: dateStr,
-            filename: dateStr + '_' + Date.now() + '.jpg',
-            mimeType: 'image/jpeg',
-            base64: base64
+    // 壓縮兩個尺寸：縮圖(150px)存 localStorage，主圖(800px)顯示用
+    compressImage(file, 150, 0.7, function(thumbUrl) {
+      compressImage(file, 800, 0.75, function(dataUrl) {
+        var imgObj = { dataUrl: dataUrl, thumbUrl: thumbUrl, name: file.name, driveUrl: null, fileId: null, uploading: !!scriptUrl };
+        curImages.push(imgObj);
+        renderPhotoStrip();
+        if (scriptUrl) {
+          var base64 = dataUrl.split(',')[1];
+          var dateStr = dk(diaryDate);
+          fetch(scriptUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain' },
+            body: JSON.stringify({
+              action: 'uploadPhoto',
+              date: dateStr,
+              filename: dateStr + '_' + Date.now() + '.jpg',
+              mimeType: 'image/jpeg',
+              base64: base64
+            })
           })
-        })
-        .then(function(r){ return r.json(); })
-        .then(function(json) {
-          if (json.ok) {
-            imgObj.driveUrl  = json.url;
-            imgObj.fileId    = json.fileId;
-            imgObj.uploading = false;
-            imgObj.dataUrl   = null; // 釋放記憶體，改用 driveUrl
-            renderPhotoStrip();
-          } else {
-            imgObj.uploading = false;
-            renderPhotoStrip();
-          }
-        })
-        .catch(function() { imgObj.uploading = false; renderPhotoStrip(); });
-      }
+          .then(function(r){ return r.json(); })
+          .then(function(json) {
+            if (json.ok) {
+              imgObj.driveUrl  = json.url;
+              imgObj.fileId    = json.fileId;
+              imgObj.uploading = false;
+              imgObj.dataUrl   = null;
+              renderPhotoStrip();
+            } else {
+              imgObj.uploading = false;
+              renderPhotoStrip();
+            }
+          })
+          .catch(function() { imgObj.uploading = false; renderPhotoStrip(); });
+        }
+      });
     });
   });
   e.target.value = '';
@@ -1547,10 +1547,6 @@ function togglePhotoMenu() {
 function closePhotoMenu() {
   var pop = document.getElementById('photoMenuPop');
   if (pop) pop.style.display = 'none';
-}
-function photoMenuAdd() {
-  closePhotoMenu();
-  document.getElementById('imgMore').click();
 }
 function photoMenuDel() {
   closePhotoMenu();
@@ -1617,10 +1613,11 @@ function toggleStar() {
   document.getElementById('starBtn').textContent = curStar ? '🌟' : '⭐';
 }
 function saveDiary() {
-  // Strip large base64 dataUrls before saving — only keep driveUrl+fileId
+  // 縮圖(thumbUrl ~5KB)永遠保留；主圖(dataUrl)只在沒有 driveUrl 時保留
   var imagesToSave = curImages.map(function(img) {
     return { name: img.name, driveUrl: img.driveUrl || null, fileId: img.fileId || null,
-             dataUrl: img.driveUrl ? null : img.dataUrl }; // keep dataUrl only if not yet on Drive
+             thumbUrl: img.thumbUrl || null,
+             dataUrl: img.driveUrl ? null : img.dataUrl };
   });
   appData.diaries[dk(diaryDate)] = {
     mood: curMood,
@@ -1664,7 +1661,7 @@ function renderDiaryList() {
     var mood = e.mood || '📓';
     var imgHtml = '';
     if (e.images && e.images.length) {
-      var src = e.images[0].driveUrl || e.images[0].dataUrl || '';
+      var src = e.images[0].driveUrl || e.images[0].thumbUrl || e.images[0].dataUrl || '';
       if (src) {
         imgHtml = '<img class="diary-card-img" src="' + src + '" loading="lazy">';
       } else {
