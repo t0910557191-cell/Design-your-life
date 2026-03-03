@@ -368,7 +368,7 @@ input[type="date"].form-input{padding:7px 8px;font-size:12px;}
   </div>
   <!-- 可收合的新增日記區 -->
   <div class="diary-toggle-row" onclick="toggleDiaryForm()">
-    <div class="diary-toggle-title">✏️ 今天的日記</div>
+    <div class="diary-toggle-title" id="diaryFormTitle">✏️ 今天的日記</div>
     <div class="diary-toggle-arrow open" id="diaryFormArrow">▼</div>
   </div>
   <div class="diary-collapsible" id="diaryFormCollapse">
@@ -1319,6 +1319,12 @@ function renderYearly() {
 // ── Diary ─────────────────────────────────────
 function loadDiaryUI() {
   document.getElementById('diaryDateLabel').textContent = dLabel(diaryDate);
+  // 動態標題
+  var today = dk(new Date());
+  var dp = dk(diaryDate).split('-');
+  document.getElementById('diaryFormTitle').textContent = (dk(diaryDate) === today)
+    ? '✏️ 今天的日記'
+    : '✏️ ' + parseInt(dp[1]) + '月' + parseInt(dp[2]) + '日的日記';
   var entry = appData.diaries[dk(diaryDate)] || null;
   curMood = ''; curImages = []; curStar = false; curPhotoIdx = 0;
   document.querySelectorAll('.mood-btn').forEach(function(b){ b.classList.remove('selected'); });
@@ -1476,12 +1482,14 @@ function handleImages(e) {
   var files = Array.from(e.target.files);
   var scriptUrl = getDylScriptUrl();
   files.forEach(function(file) {
-    // 壓縮兩個尺寸：縮圖(150px)存 localStorage，主圖(800px)顯示用
-    compressImage(file, 150, 0.7, function(thumbUrl) {
-      compressImage(file, 800, 0.75, function(dataUrl) {
+    // 縮圖(300px)存 localStorage 用於縮圖牆，主圖(1600px)高品質顯示
+    compressImage(file, 300, 0.8, function(thumbUrl) {
+      compressImage(file, 1600, 0.92, function(dataUrl) {
         var imgObj = { dataUrl: dataUrl, thumbUrl: thumbUrl, name: file.name, driveUrl: null, fileId: null, uploading: !!scriptUrl };
         curImages.push(imgObj);
         renderPhotoStrip();
+        // 自動儲存，讓縮圖即刻出現
+        saveDiaryAuto();
         if (scriptUrl) {
           var base64 = dataUrl.split(',')[1];
           var dateStr = dk(diaryDate);
@@ -1611,6 +1619,18 @@ function pickMood(emoji, el) {
 function toggleStar() {
   curStar = !curStar;
   document.getElementById('starBtn').textContent = curStar ? '🌟' : '⭐';
+}
+function saveDiaryAuto() {
+  var imagesToSave = curImages.map(function(img) {
+    return { name: img.name, driveUrl: img.driveUrl || null, fileId: img.fileId || null,
+             thumbUrl: img.thumbUrl || null,
+             dataUrl: img.driveUrl ? null : img.dataUrl };
+  });
+  if (!appData.diaries[dk(diaryDate)]) appData.diaries[dk(diaryDate)] = {};
+  appData.diaries[dk(diaryDate)].images = imagesToSave;
+  appData.diaries[dk(diaryDate)].savedAt = Date.now();
+  save();
+  renderDiaryList();
 }
 function saveDiary() {
   // 縮圖(thumbUrl ~5KB)永遠保留；主圖(dataUrl)只在沒有 driveUrl 時保留
