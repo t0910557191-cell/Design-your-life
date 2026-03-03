@@ -157,6 +157,20 @@ input[type="date"].form-input{padding:7px 8px;font-size:12px;}
 .diary-save-btn:hover{background:var(--accent2);}
 .saved-badge{text-align:center;font-family:'Caveat',cursive;font-size:14px;color:var(--accent);padding:5px;opacity:0;transition:opacity .3s;}
 .saved-badge.show{opacity:1;}
+/* 日記閱讀模式 */
+.diary-read-view{padding:14px;position:relative;}
+.diary-read-photo{width:100%;max-height:280px;object-fit:cover;display:block;border-radius:0;}
+.diary-read-mood{font-size:28px;margin-bottom:8px;}
+.diary-read-date{font-family:'Playfair Display',serif;font-size:13px;color:var(--ink3);margin-bottom:12px;}
+.diary-read-section{margin-bottom:12px;}
+.diary-read-label{font-family:'Caveat',cursive;font-size:13px;color:var(--accent);font-weight:600;margin-bottom:4px;}
+.diary-read-items{display:flex;flex-direction:column;gap:4px;}
+.diary-read-item{font-family:'Caveat',cursive;font-size:15px;color:var(--ink);display:flex;gap:6px;}
+.diary-read-item-num{color:var(--accent);font-weight:600;flex-shrink:0;}
+.diary-read-text{font-family:'Caveat',cursive;font-size:15px;line-height:1.8;color:var(--ink);white-space:pre-wrap;}
+.diary-read-footer{display:flex;align-items:center;justify-content:space-between;margin-top:14px;padding-top:10px;border-top:1px solid var(--border);}
+.diary-read-edit-btn{font-family:'Caveat',cursive;font-size:13px;color:var(--ink3);background:none;border:1.5px solid var(--border);border-radius:8px;padding:5px 12px;cursor:pointer;}
+.diary-stamp{font-size:32px;opacity:0.85;filter:drop-shadow(1px 1px 1px rgba(139,90,43,0.3));transform:rotate(-8deg);display:inline-block;line-height:1;}
 /* Diary collapse toggle */
 .diary-toggle-row{display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:10px 0 6px;user-select:none;}
 .diary-toggle-title{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:var(--ink);}
@@ -168,8 +182,8 @@ input[type="date"].form-input{padding:7px 8px;font-size:12px;}
 .diary-entry-list{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:6px;}
 .diary-card{background:var(--paper);border:1.5px solid var(--border);border-radius:14px;overflow:hidden;cursor:pointer;transition:all .2s;box-shadow:var(--shadow);}
 .diary-card:hover{box-shadow:0 4px 20px rgba(44,36,22,0.13);border-color:var(--border2);}
-.diary-card-img{width:100%;height:100px;object-fit:cover;display:block;background:var(--cream2);}
-.diary-card-no-img{width:100%;height:100px;display:flex;align-items:center;justify-content:center;font-size:32px;background:linear-gradient(135deg,var(--cream2),var(--accentbg));}
+.diary-card-img{width:100%;height:140px;object-fit:cover;object-position:top center;display:block;background:var(--cream2);}
+.diary-card-no-img{width:100%;height:140px;display:flex;align-items:center;justify-content:center;font-size:32px;background:linear-gradient(135deg,var(--cream2),var(--accentbg));}
 .diary-card-body{padding:8px 10px 9px;}
 .diary-card-date{font-family:'DM Sans',sans-serif;font-size:11px;font-weight:600;color:var(--ink3);margin-bottom:3px;}
 .diary-card-mood{font-size:16px;line-height:1;}
@@ -365,6 +379,7 @@ input[type="date"].form-input{padding:7px 8px;font-size:12px;}
     <button class="mnav-btn" onclick="changeDiaryDate(-1)">&#8249;</button>
     <div class="mnav-label" id="diaryDateLabel" onclick="openDiaryJump()" style="cursor:pointer;" title="點擊跳到指定日期"></div>
     <button class="mnav-btn" onclick="changeDiaryDate(1)">&#8250;</button>
+    <button class="mnav-btn" onclick="goToToday()" title="回到今天" style="font-size:13px;padding:4px 10px;margin-left:4px;background:var(--accentbg);border:1.5px solid var(--accent);color:var(--accent);border-radius:9px;font-family:'Caveat',cursive;font-weight:600;">今天</button>
   </div>
   <!-- 可收合的新增日記區 -->
   <div class="diary-toggle-row" onclick="toggleDiaryForm()">
@@ -372,7 +387,8 @@ input[type="date"].form-input{padding:7px 8px;font-size:12px;}
     <div class="diary-toggle-arrow open" id="diaryFormArrow">▼</div>
   </div>
   <div class="diary-collapsible" id="diaryFormCollapse">
-  <div class="card" style="padding:0;overflow:hidden;margin-top:2px;">
+  <!-- 編輯模式 -->
+  <div class="card" id="diaryEditCard" style="padding:0;overflow:hidden;margin-top:2px;">
     <div id="photoStrip" style="display:none;position:relative;">
       <img id="photoMain" class="diary-photo-main" src="" alt=""/>
       <!-- 左右切換指示點 -->
@@ -401,7 +417,7 @@ input[type="date"].form-input{padding:7px 8px;font-size:12px;}
         <button class="mood-btn" onclick="pickMood('😤',this)">😤</button>
         <button class="mood-btn" onclick="pickMood('🤯',this)">🤯</button>
       </div>
-      <div class="field-label">今日三件好事</div>
+      <div class="field-label">今日三件重要的事情</div>
       <div class="good-list">
         <div class="good-item"><div class="good-num">1.</div><input class="good-input" id="good1" placeholder="今天有什麼好事？"/></div>
         <div class="good-item"><div class="good-num">2.</div><input class="good-input" id="good2" placeholder=""/></div>
@@ -416,6 +432,11 @@ input[type="date"].form-input{padding:7px 8px;font-size:12px;}
       </div>
       <div class="saved-badge" id="savedBadge">✓ 已儲存！</div>
     </div>
+  </div>
+  </div><!-- /diaryEditCard -->
+  <!-- 閱讀模式 -->
+  <div class="card" id="diaryReadCard" style="padding:0;overflow:hidden;margin-top:2px;display:none;">
+    <div id="diaryReadContent"></div>
   </div>
   </div><!-- /diary-collapsible -->
 
@@ -910,6 +931,47 @@ function changeDiaryDate(d) {
   diaryDate = nd;
   loadDiaryUI();
 }
+function goToToday() {
+  diaryDate = new Date();
+  loadDiaryUI();
+}
+function showDiaryReadView() {
+  var entry = appData.diaries[dk(diaryDate)];
+  if (!entry) return;
+  var dp = dk(diaryDate).split('-');
+  var dateStr = dp[0] + '年' + parseInt(dp[1]) + '月' + parseInt(dp[2]) + '日';
+  // 照片
+  var photoHtml = '';
+  if (entry.images && entry.images.length) {
+    var src = entry.images[0].driveUrl || entry.images[0].thumbUrl || entry.images[0].dataUrl || '';
+    if (src) photoHtml = '<img class="diary-read-photo" src="' + src + '">';
+  }
+  // 三件重要的事
+  var itemsHtml = '';
+  [entry.good1, entry.good2, entry.good3].forEach(function(t, i) {
+    if (t) itemsHtml += '<div class="diary-read-item"><span class="diary-read-item-num">' + (i+1) + '.</span><span>' + t + '</span></div>';
+  });
+  // 蓋章：根據心情選對應圖騰
+  var stamps = {'😊':'✦','🥰':'♡','😌':'✿','😔':'☁','😤':'⚡','🤯':'✸'};
+  var stamp = stamps[entry.mood] || '✦';
+  var html = photoHtml
+    + '<div class="diary-read-view">'
+    + '<div class="diary-read-mood">' + (entry.mood || '') + '</div>'
+    + '<div class="diary-read-date">' + dateStr + (entry.star ? ' 🌟' : '') + '</div>'
+    + (itemsHtml ? '<div class="diary-read-section"><div class="diary-read-label">今日三件重要的事情</div><div class="diary-read-items">' + itemsHtml + '</div></div>' : '')
+    + (entry.text ? '<div class="diary-read-section"><div class="diary-read-label">今日記錄</div><div class="diary-read-text">' + entry.text.replace(/</g,'&lt;') + '</div></div>' : '')
+    + '<div class="diary-read-footer">'
+    +   '<button class="diary-read-edit-btn" onclick="showDiaryEditView()">✏️ 編輯</button>'
+    +   '<span class="diary-stamp">' + stamp + '</span>'
+    + '</div></div>';
+  document.getElementById('diaryReadContent').innerHTML = html;
+  document.getElementById('diaryEditCard').style.display = 'none';
+  document.getElementById('diaryReadCard').style.display = 'block';
+}
+function showDiaryEditView() {
+  document.getElementById('diaryReadCard').style.display = 'none';
+  document.getElementById('diaryEditCard').style.display = 'block';
+}
 function toggleForm(id) { document.getElementById(id).classList.toggle('open'); }
 
 // ── Monthly Todo ──────────────────────────────
@@ -1351,6 +1413,8 @@ function loadDiaryUI() {
   renderPhotoStrip();
   renderDiaryList();
   updateBottomBar();
+  // 有資料則預設顯示閱讀模式，空白則編輯模式
+  if (entry) { showDiaryReadView(); } else { showDiaryEditView(); }
 }
 // ── 共用：開啟/關閉 overlay modal ────────────
 function openJumpModal(id) {
@@ -1482,8 +1546,8 @@ function handleImages(e) {
   var files = Array.from(e.target.files);
   var scriptUrl = getDylScriptUrl();
   files.forEach(function(file) {
-    // 縮圖(300px)存 localStorage 用於縮圖牆，主圖(1600px)高品質顯示
-    compressImage(file, 300, 0.8, function(thumbUrl) {
+    // 縮圖(600px)存 localStorage 用於縮圖牆，主圖(1600px)高品質顯示
+    compressImage(file, 600, 0.9, function(thumbUrl) {
       compressImage(file, 1600, 0.92, function(dataUrl) {
         var imgObj = { dataUrl: dataUrl, thumbUrl: thumbUrl, name: file.name, driveUrl: null, fileId: null, uploading: !!scriptUrl };
         curImages.push(imgObj);
@@ -1651,8 +1715,10 @@ function saveDiary() {
   };
   save();
   var b = document.getElementById('savedBadge');
-  b.classList.add('show'); setTimeout(function(){ b.classList.remove('show'); }, 2000);
+  b.classList.add('show'); setTimeout(function(){ b.classList.remove('show'); }, 1500);
   renderDiaryList(); updateBottomBar();
+  // 儲存後切到閱讀模式
+  setTimeout(function(){ showDiaryReadView(); }, 400);
 }
 function toggleDiaryForm() {
   var collapse = document.getElementById('diaryFormCollapse');
@@ -1677,7 +1743,7 @@ function renderDiaryList() {
     var preview = e.text ? e.text.substring(0, 28).replace(/\n/g,' ')
                  : (e.good1 ? e.good1.substring(0,28) : '');
     var dp = k.split('-');
-    var dateShort = parseInt(dp[1]) + '/' + parseInt(dp[2]);
+    var dateShort = dp[0] + '/' + parseInt(dp[1]) + '/' + parseInt(dp[2]);
     var mood = e.mood || '📓';
     var imgHtml = '';
     if (e.images && e.images.length) {
