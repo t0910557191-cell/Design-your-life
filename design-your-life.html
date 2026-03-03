@@ -384,12 +384,10 @@ input[type="date"].form-input{padding:7px 8px;font-size:12px;}
         <button onclick="photoMenuAdd()" style="width:100%;background:none;border:none;border-bottom:1px solid var(--border);color:var(--ink);font-family:'Caveat',cursive;font-size:15px;padding:12px 16px;cursor:pointer;text-align:left;">➕ 新增照片</button>
         <button onclick="photoMenuDel()" style="width:100%;background:none;border:none;color:#e05050;font-family:'Caveat',cursive;font-size:15px;padding:12px 16px;cursor:pointer;text-align:left;">🗑 刪除此張</button>
       </div>
-      <input type="file" id="imgMore" accept="image/*" multiple style="display:none" onchange="handleImages(event)"/>
     </div>
     <div style="padding:14px">
       <div id="uploadArea" class="upload-area" onclick="document.getElementById('imgInput').click()">
         <div class="upload-label">📷 點擊上傳照片（顯示在日記頂端）</div>
-        <input type="file" id="imgInput" accept="image/*" multiple style="display:none" onchange="handleImages(event)"/>
       </div>
       <div class="field-label">今天心情</div>
       <div class="mood-row">
@@ -417,6 +415,10 @@ input[type="date"].form-input{padding:7px 8px;font-size:12px;}
     </div>
   </div>
   </div><!-- /diary-collapsible -->
+
+  <!-- file inputs 放在收合區外，永遠存在 DOM -->
+  <input type="file" id="imgInput" accept="image/*" multiple style="display:none" onchange="handleImages(event)"/>
+  <input type="file" id="imgMore"  accept="image/*" multiple style="display:none" onchange="handleImages(event)"/>
 
   <!-- 過去的日記縮圖牆 -->
   <div class="diary-toggle-row" style="margin-top:6px;">
@@ -1693,6 +1695,11 @@ function jumpToDiary(dateStr) {
     if (tabs[i].textContent.indexOf('日記') !== -1) { tabs[i].classList.add('active'); break; }
   }
   document.getElementById('sec-diary').classList.add('active');
+  // 自動展開日記表單
+  var collapse = document.getElementById('diaryFormCollapse');
+  var arrow = document.getElementById('diaryFormArrow');
+  collapse.classList.remove('collapsed');
+  arrow.classList.add('open');
   loadDiaryUI();
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
