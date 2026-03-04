@@ -181,8 +181,8 @@ input[type="date"].form-input{padding:8px 10px;font-size:13px;}
 .diary-read-item{font-family:'Caveat',cursive;font-size:17px;color:var(--ink);display:flex;gap:7px;}
 .diary-read-item-num{color:var(--accent);font-weight:600;flex-shrink:0;}
 .diary-read-text{font-family:'Caveat',cursive;font-size:17px;line-height:1.85;color:var(--ink);white-space:pre-wrap;}
-.diary-read-footer{display:flex;align-items:center;justify-content:space-between;margin-top:14px;padding-top:10px;border-top:1px solid var(--border);}
-.diary-read-edit-btn{font-family:'Noto Serif TC',serif;font-size:13px;color:var(--ink3);background:none;border:1.5px solid var(--border);border-radius:9px;padding:6px 14px;cursor:pointer;}
+.diary-read-footer{display:flex;align-items:center;justify-content:flex-start;gap:8px;margin-top:14px;padding-top:10px;border-top:1px solid var(--border);}
+.diary-read-edit-btn{font-family:'Noto Serif TC',serif;font-size:13px;color:var(--ink3);background:none;border:1.5px solid var(--border);border-radius:9px;padding:6px 14px;cursor:pointer;display:inline-flex;align-items:center;gap:4px;text-decoration:none;}
 /* ── Diary collapse toggle ── */
 .diary-toggle-row{display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:10px 0 6px;user-select:none;}
 .diary-toggle-title{font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--ink);}
@@ -440,7 +440,6 @@ input[type="date"].form-input{padding:8px 10px;font-size:13px;}
       </div>
       <div class="saved-badge" id="savedBadge">✓ 已儲存！</div>
     </div>
-  </div>
   </div><!-- /diaryEditCard -->
   <!-- 閱讀模式 -->
   <div class="card" id="diaryReadCard" style="padding:0;overflow:hidden;margin-top:2px;display:none;">
@@ -450,15 +449,11 @@ input[type="date"].form-input{padding:8px 10px;font-size:13px;}
 
   <!-- 過去的日記縮圖牆 -->
   <div class="diary-toggle-row" style="margin-top:6px;">
-    <div class="diary-toggle-title">🖼 過去的日記</div>
-    <div style="font-family:'Caveat',cursive;font-size:12px;color:var(--ink3)">點擊查看</div>
+    <div class="diary-toggle-title">過去的日記</div>
+    <span style="font-family:'Noto Serif TC',serif;font-size:12px;color:var(--ink3)">點擊查看</span>
   </div>
   <div class="diary-entry-list" id="diaryEntryList"></div>
-</div>
-
-<!-- file inputs: 完全在所有 card/collapsible 之外，iOS 可正常觸發 -->
-<input type="file" id="imgInput" accept="image/*" multiple style="position:fixed;left:-9999px;top:0;width:1px;height:1px;opacity:0;" onchange="handleImages(event)"/>
-<input type="file" id="imgMore"  accept="image/*" multiple style="position:fixed;left:-9999px;top:0;width:1px;height:1px;opacity:0;" onchange="handleImages(event)"/>
+</div><!-- /sec-diary -->
 
 <!-- ===== DASHBOARD ===== -->
 <div class="page-section" id="sec-dash">
@@ -527,6 +522,10 @@ input[type="date"].form-input{padding:8px 10px;font-size:13px;}
 </div>
 
 </div><!-- /page -->
+
+<!-- file inputs: 在所有 page-section 之外，iOS label for= 正常觸發 -->
+<input type="file" id="imgInput" accept="image/*" multiple style="position:fixed;left:-9999px;top:0;width:1px;height:1px;opacity:0;" onchange="handleImages(event)"/>
+<input type="file" id="imgMore"  accept="image/*" multiple style="position:fixed;left:-9999px;top:0;width:1px;height:1px;opacity:0;" onchange="handleImages(event)"/>
 
 <div class="bottom-bar">
   <div class="bottom-inner">
@@ -985,8 +984,11 @@ function showDiaryReadView() {
     + (itemsHtml ? '<div class="diary-read-section"><div class="diary-read-label">今日三件重要的事情</div><div class="diary-read-items">' + itemsHtml + '</div></div>' : '')
     + (entry.text ? '<div class="diary-read-section"><div class="diary-read-label">今日記錄</div><div class="diary-read-text">' + entry.text.replace(/</g,'&lt;') + '</div></div>' : '')
     + '<div class="diary-read-footer">'
-    +   '<button class="diary-read-edit-btn" onclick="showDiaryEditView()">✏️ 編輯</button>'
-    +   '<span class="diary-stamp"><svg xmlns="http://www.w3.org/2000/svg" width="72" height="82" viewBox="0 0 72 82"><ellipse cx="36" cy="41" rx="33" ry="38" fill="#a8d4e0" /><ellipse cx="36" cy="41" rx="28" ry="32" fill="#b8dde8" /><ellipse cx="36" cy="41" rx="28" ry="32" fill="none" stroke="#7cb8cc" stroke-width="1.5" opacity="0.5"/><path d="M34 58 Q36 48 38 58" stroke="#8ab87a" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M36 30 Q36 44 36 58" stroke="#8ab87a" stroke-width="1.8" fill="none" stroke-linecap="round"/><path d="M36 46 Q28 40 27 34 Q33 36 36 46Z" fill="#9cc882" /><path d="M36 43 Q44 38 46 32 Q40 35 36 43Z" fill="#8ab87a" /><ellipse cx="36" cy="27" rx="4" ry="5" fill="#c8e8c0" /><path d="M33 29 Q36 24 39 29" fill="#b8dda8" /><circle cx="25" cy="50" r="3" fill="#f5f0d8" /><ellipse cx="25" cy="43.5" rx="2" ry="4" fill="white" transform="rotate(0,25,50)"/><ellipse cx="25" cy="43.5" rx="2" ry="4" fill="white" transform="rotate(45,25,50)"/><ellipse cx="25" cy="43.5" rx="2" ry="4" fill="white" transform="rotate(90,25,50)"/><ellipse cx="25" cy="43.5" rx="2" ry="4" fill="white" transform="rotate(135,25,50)"/><circle cx="25" cy="50" r="3.5" fill="#e8d870" /><circle cx="25" cy="50" r="2" fill="#d4c040" /><circle cx="47" cy="50" r="3" fill="#f5f0d8" /><ellipse cx="47" cy="43.5" rx="2" ry="4" fill="white" transform="rotate(0,47,50)"/><ellipse cx="47" cy="43.5" rx="2" ry="4" fill="white" transform="rotate(45,47,50)"/><ellipse cx="47" cy="43.5" rx="2" ry="4" fill="white" transform="rotate(90,47,50)"/><ellipse cx="47" cy="43.5" rx="2" ry="4" fill="white" transform="rotate(135,47,50)"/><circle cx="47" cy="50" r="3.5" fill="#e8d870" /><circle cx="47" cy="50" r="2" fill="#d4c040" /><ellipse cx="36" cy="37.5" rx="1.5" ry="3" fill="white" transform="rotate(0,36,41)"/><ellipse cx="36" cy="37.5" rx="1.5" ry="3" fill="white" transform="rotate(60,36,41)"/><ellipse cx="36" cy="37.5" rx="1.5" ry="3" fill="white" transform="rotate(120,36,41)"/><circle cx="36" cy="41" r="2.5" fill="#e8d870" /><circle cx="36" cy="41" r="1.5" fill="#d4c040" /><ellipse cx="22" cy="22" rx="8" ry="6" fill="white" opacity="0.18" transform="rotate(-15,22,22)"/></svg></span>'
+    +   '<div style="display:flex;gap:8px;align-items:center;">'
+    +   '<button class="diary-read-edit-btn" onclick="showDiaryEditView()">編輯</button>'
+    +   '<label for="imgInput" class="diary-read-edit-btn" style="cursor:pointer;">加照片</label>'
+    +   '</div>'
+    +   '<span class="diary-stamp" style="margin-left:auto;"><svg xmlns="http://www.w3.org/2000/svg" width="72" height="82" viewBox="0 0 72 82"><ellipse cx="36" cy="41" rx="33" ry="38" fill="#a8d4e0" /><ellipse cx="36" cy="41" rx="28" ry="32" fill="#b8dde8" /><ellipse cx="36" cy="41" rx="28" ry="32" fill="none" stroke="#7cb8cc" stroke-width="1.5" opacity="0.5"/><path d="M34 58 Q36 48 38 58" stroke="#8ab87a" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M36 30 Q36 44 36 58" stroke="#8ab87a" stroke-width="1.8" fill="none" stroke-linecap="round"/><path d="M36 46 Q28 40 27 34 Q33 36 36 46Z" fill="#9cc882" /><path d="M36 43 Q44 38 46 32 Q40 35 36 43Z" fill="#8ab87a" /><ellipse cx="36" cy="27" rx="4" ry="5" fill="#c8e8c0" /><path d="M33 29 Q36 24 39 29" fill="#b8dda8" /><circle cx="25" cy="50" r="3" fill="#f5f0d8" /><ellipse cx="25" cy="43.5" rx="2" ry="4" fill="white" transform="rotate(0,25,50)"/><ellipse cx="25" cy="43.5" rx="2" ry="4" fill="white" transform="rotate(45,25,50)"/><ellipse cx="25" cy="43.5" rx="2" ry="4" fill="white" transform="rotate(90,25,50)"/><ellipse cx="25" cy="43.5" rx="2" ry="4" fill="white" transform="rotate(135,25,50)"/><circle cx="25" cy="50" r="3.5" fill="#e8d870" /><circle cx="25" cy="50" r="2" fill="#d4c040" /><circle cx="47" cy="50" r="3" fill="#f5f0d8" /><ellipse cx="47" cy="43.5" rx="2" ry="4" fill="white" transform="rotate(0,47,50)"/><ellipse cx="47" cy="43.5" rx="2" ry="4" fill="white" transform="rotate(45,47,50)"/><ellipse cx="47" cy="43.5" rx="2" ry="4" fill="white" transform="rotate(90,47,50)"/><ellipse cx="47" cy="43.5" rx="2" ry="4" fill="white" transform="rotate(135,47,50)"/><circle cx="47" cy="50" r="3.5" fill="#e8d870" /><circle cx="47" cy="50" r="2" fill="#d4c040" /><ellipse cx="36" cy="37.5" rx="1.5" ry="3" fill="white" transform="rotate(0,36,41)"/><ellipse cx="36" cy="37.5" rx="1.5" ry="3" fill="white" transform="rotate(60,36,41)"/><ellipse cx="36" cy="37.5" rx="1.5" ry="3" fill="white" transform="rotate(120,36,41)"/><circle cx="36" cy="41" r="2.5" fill="#e8d870" /><circle cx="36" cy="41" r="1.5" fill="#d4c040" /><ellipse cx="22" cy="22" rx="8" ry="6" fill="white" opacity="0.18" transform="rotate(-15,22,22)"/></svg></span>'
     + '</div></div>';
   document.getElementById('diaryReadContent').innerHTML = html;
   document.getElementById('diaryEditCard').style.display = 'none';
@@ -1719,6 +1721,11 @@ function saveDiaryAuto() {
   appData.diaries[dk(diaryDate)].savedAt = Date.now();
   save();
   renderDiaryList();
+  // 如果目前是閱讀模式，刷新顯示
+  var readCard = document.getElementById('diaryReadCard');
+  if (readCard && readCard.style.display !== 'none') showDiaryReadView();
+  // 同時更新編輯模式的 photoStrip
+  renderPhotoStrip();
 }
 function saveDiary() {
   // 縮圖(thumbUrl ~5KB)永遠保留；主圖(dataUrl)只在沒有 driveUrl 時保留
