@@ -1008,6 +1008,29 @@ function showDiaryReadView() {
   document.getElementById('diaryFormCollapse').style.opacity = '0';
   document.getElementById('diaryFormArrow').classList.remove('open');
 }
+function deleteDiary() {
+  var btn = document.getElementById('deleteDiaryBtn');
+  if (!btn) return;
+  if (btn.dataset.confirm !== '1') {
+    btn.textContent = '確定刪除？';
+    btn.dataset.confirm = '1';
+    setTimeout(function(){ btn.textContent = '刪除'; btn.dataset.confirm = ''; }, 3000);
+    return;
+  }
+  delete appData.diaries[dk(diaryDate)];
+  save();
+  curImages = []; curMood = ''; curStar = false; curPhotoIdx = 0;
+  renderDiaryList();
+  renderPhotoStrip();
+  updateBottomBar();
+  document.getElementById('good1').value = '';
+  document.getElementById('good2').value = '';
+  document.getElementById('good3').value = '';
+  document.getElementById('diaryText').value = '';
+  document.getElementById('starBtn').textContent = '⭐';
+  document.querySelectorAll('.mood-btn').forEach(function(b){ b.classList.remove('selected'); });
+  showDiaryEditView();
+}
 function showDiaryEditView() {
   document.getElementById('diaryReadCard').style.display = 'none';
   document.getElementById('diaryFormCollapse').style.maxHeight = '2000px';
