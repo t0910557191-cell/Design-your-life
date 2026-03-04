@@ -38,7 +38,7 @@ header{background:var(--paper);border-bottom:1.5px solid var(--border);padding:1
 .header-title span{font-style:italic;color:var(--accent);}
 .header-sub{font-family:'Noto Serif TC',serif;font-size:13px;color:var(--ink3);margin-bottom:12px;}
 .tab-bar{display:flex;gap:5px;}
-.tab{flex:1;padding:8px 0;font-family:'Noto Serif TC',serif;font-size:13px;font-weight:500;border:1.5px solid var(--border);border-radius:10px;background:none;color:var(--ink3);cursor:pointer;transition:all .2s;text-align:center;}
+.tab{flex:1;padding:7px 0;font-family:'Noto Serif TC',serif;font-size:12px;font-weight:500;border:1.5px solid var(--border);border-radius:10px;background:none;color:var(--ink3);cursor:pointer;transition:all .2s;text-align:center;}
 .tab.active{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600;}
 .tab:hover:not(.active){background:var(--cream2);}
 /* ── Page ── */
@@ -266,7 +266,8 @@ input[type="date"].form-input{padding:8px 10px;font-size:13px;}
     <button onclick="openDylSyncModal()" style="background:none;border:1.5px solid var(--border);border-radius:9px;color:var(--ink3);font-family:'DM Sans',sans-serif;font-size:11px;padding:6px 10px;cursor:pointer;margin-top:4px;flex-shrink:0;" id="dylSyncBtn">☁ 同步</button>
   </div>
   <div class="tab-bar">
-    <button class="tab active" onclick="switchTab('todo',this)">月計劃</button>
+    <button class="tab active" onclick="switchTab('daily',this)">每日</button>
+    <button class="tab" onclick="switchTab('todo',this)">月計劃</button>
     <button class="tab" onclick="switchTab('yearly',this)">年度目標</button>
     <button class="tab" onclick="switchTab('diary',this)">日記</button>
     <button class="tab" onclick="switchTab('dash',this)">統計</button>
@@ -276,7 +277,7 @@ input[type="date"].form-input{padding:8px 10px;font-size:13px;}
 <div class="page">
 
 <!-- ===== MONTHLY TODO ===== -->
-<div class="page-section active" id="sec-todo">
+<div class="page-section" id="sec-todo">
   <div style="height:4px"></div>
   <div class="mnav">
     <button class="mnav-btn" onclick="changeMonth(-1)">&#8249;</button>
@@ -533,6 +534,150 @@ input[type="date"].form-input{padding:8px 10px;font-size:13px;}
   </div>
 </div>
 
+<div class="page-section active" id="sec-daily">
+  <div style="height:4px"></div>
+
+  <!-- 每日小語 -->
+  <div class="card" id="quoteCard" style="padding:22px 20px;margin-bottom:14px;text-align:center;background:var(--accentbg);border-color:var(--border2);">
+    <div style="font-family:'Caveat',cursive;font-size:13px;color:var(--accent);margin-bottom:10px;letter-spacing:1px;">✦ 今日小語 ✦</div>
+    <div id="dailyQuote" style="font-family:'Noto Serif TC',serif;font-size:17px;color:var(--ink);line-height:1.7;font-weight:500;"></div>
+    <div id="dailyQuoteAuthor" style="font-family:'Caveat',cursive;font-size:14px;color:var(--ink3);margin-top:10px;"></div>
+    <button onclick="refreshQuote()" style="margin-top:14px;background:none;border:1.5px solid var(--border2);border-radius:20px;color:var(--ink3);font-family:'Noto Serif TC',serif;font-size:12px;padding:5px 16px;cursor:pointer;">換一句</button>
+  </div>
+
+  <!-- 塔羅牌 -->
+  <div style="background:#f5ead0;border-radius:16px;padding:20px 16px 22px;margin-bottom:14px;position:relative;border:1px solid #d4b896;">
+    <!-- 頂部標題 -->
+    <div style="text-align:center;margin-bottom:16px;">
+      <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:#6b3a1f;letter-spacing:1px;">今日塔羅</div>
+      <div style="font-family:'Noto Serif TC',serif;font-size:11px;color:#a07850;margin-top:3px;letter-spacing:2px;">✦ TAROT DU JOUR ✦</div>
+    </div>
+
+    <!-- 牌 -->
+    <div style="display:flex;justify-content:center;margin-bottom:18px;">
+      <div id="tarotCardWrap" onclick="flipTarot()" style="cursor:pointer;width:150px;height:250px;-webkit-tap-highlight-color:transparent;">
+
+        <!-- 牌背 -->
+        <div id="tarotBack" style="width:150px;height:250px;">
+          <svg width="150" height="250" viewBox="0 0 150 250" xmlns="http://www.w3.org/2000/svg">
+            <rect width="150" height="250" rx="10" fill="#e8c9a0"/>
+            <rect x="4" y="4" width="142" height="242" rx="8" fill="none" stroke="#8b5e2a" stroke-width="1.5"/>
+            <rect x="7" y="7" width="136" height="236" rx="6" fill="none" stroke="#c4923a" stroke-width="0.7" opacity="0.6"/>
+            <!-- 頂部裝飾 y:8~48 -->
+            <ellipse cx="75" cy="28" rx="22" ry="16" fill="#f5e8c0" stroke="#c4923a" stroke-width="0.8" opacity="0.9"/>
+            <ellipse cx="75" cy="27" rx="8" ry="10" fill="#f2d9b0"/>
+            <path d="M53 22 Q64 13 75 17 Q86 13 97 22" fill="#d4a870" stroke="#8b5e2a" stroke-width="0.7" opacity="0.7"/>
+            <path d="M51 25 Q36 18 24 25 Q34 30 51 28" fill="#e8d4a0" stroke="#8b5e2a" stroke-width="0.5" opacity="0.7"/>
+            <path d="M99 25 Q114 18 126 25 Q116 30 99 28" fill="#e8d4a0" stroke="#8b5e2a" stroke-width="0.5" opacity="0.7"/>
+            <!-- 拱形 y:58~193 -->
+            <path d="M28 70 L28 190 Q28 198 38 198 L112 198 Q122 198 122 190 L122 70 Q122 58 75 58 Q28 58 28 70Z" fill="#f0e4d0" stroke="#8b5e2a" stroke-width="1.2"/>
+            <!-- ARCANA MAJOR：font-size=7，寬度約80px，在拱形內 x=35~115 -->
+            <text x="75" y="74" text-anchor="middle" fill="#8b5e2a" font-family="serif" font-size="7" letter-spacing="1.5" opacity="0.5">ARCANA MAJOR</text>
+            <line x1="44" y1="78" x2="106" y2="78" stroke="#c4923a" stroke-width="0.5" opacity="0.3"/>
+            <!-- 中央符號 -->
+            <text x="75" y="132" text-anchor="middle" dominant-baseline="middle" font-size="32" fill="#8b5e2a" opacity="0.3">✦</text>
+            <!-- 側邊藤蔓 -->
+            <g stroke="#8b5e2a" stroke-width="0.8" fill="none" opacity="0.55">
+              <path d="M16 72 Q9 88 13 105 Q17 122 11 138 Q6 154 13 168"/>
+              <path d="M16 84 Q7 82 6 89 Q10 96 17 92"/>
+              <path d="M14 118 Q5 115 4 123 Q8 131 15 127"/>
+              <path d="M134 72 Q141 88 137 105 Q133 122 139 138 Q144 154 137 168"/>
+              <path d="M134 84 Q143 82 144 89 Q140 96 133 92"/>
+              <path d="M136 118 Q145 115 146 123 Q142 131 135 127"/>
+            </g>
+            <g fill="#b8834a" opacity="0.38">
+              <path d="M6 82 Q12 76 16 84 Q10 88 6 82Z"/>
+              <path d="M4 116 Q10 110 14 118 Q8 122 4 116Z"/>
+              <path d="M144 82 Q138 76 134 84 Q140 88 144 82Z"/>
+              <path d="M146 116 Q140 110 136 118 Q142 122 146 116Z"/>
+            </g>
+            <!-- 底部框 y:200~238 -->
+            <rect x="38" y="200" width="74" height="36" rx="5" fill="#f0e4c0" stroke="#8b5e2a" stroke-width="0.8"/>
+            <text x="75" y="223" text-anchor="middle" fill="#8b5e2a" font-family="serif" font-size="9" opacity="0.6">點擊翻牌</text>
+            <!-- 角落圓飾 -->
+            <g fill="none" stroke="#8b5e2a" stroke-width="0.7" opacity="0.45">
+              <circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="2"/>
+              <circle cx="138" cy="12" r="4"/><circle cx="138" cy="12" r="2"/>
+              <circle cx="12" cy="238" r="4"/><circle cx="12" cy="238" r="2"/>
+              <circle cx="138" cy="238" r="4"/><circle cx="138" cy="238" r="2"/>
+            </g>
+          </svg>
+        </div>
+
+        <!-- 牌面（翻開後顯示） -->
+        <div id="tarotFaceDiv" style="display:none;width:150px;height:250px;">
+          <svg width="150" height="250" viewBox="0 0 150 250" xmlns="http://www.w3.org/2000/svg">
+            <!-- 底色 + 外框 -->
+            <rect width="150" height="250" rx="10" fill="#e8c9a0"/>
+            <rect x="4" y="4" width="142" height="242" rx="8" fill="none" stroke="#8b5e2a" stroke-width="1.5"/>
+
+            <!-- 頂部裝飾 y:8~48 -->
+            <ellipse cx="75" cy="28" rx="22" ry="16" fill="#f5e8c0" stroke="#c4923a" stroke-width="0.8" opacity="0.9"/>
+            <ellipse cx="75" cy="27" rx="8" ry="10" fill="#f2d9b0"/>
+            <path d="M53 22 Q64 13 75 17 Q86 13 97 22" fill="#d4a870" stroke="#8b5e2a" stroke-width="0.7" opacity="0.7"/>
+            <path d="M51 25 Q36 18 24 25 Q34 30 51 28" fill="#e8d4a0" stroke="#8b5e2a" stroke-width="0.5" opacity="0.7"/>
+            <path d="M99 25 Q114 18 126 25 Q116 30 99 28" fill="#e8d4a0" stroke="#8b5e2a" stroke-width="0.5" opacity="0.7"/>
+
+            <!-- 拱形主框 y:48~188 (高度140) -->
+            <path d="M28 70 L28 185 Q28 193 38 193 L112 193 Q122 193 122 185 L122 70 Q122 58 75 58 Q28 58 28 70Z" fill="#f8f0e0" stroke="#8b5e2a" stroke-width="1.2"/>
+            <path d="M32 71 L32 183 Q32 190 40 190 L110 190 Q118 190 118 183 L118 71 Q118 61 75 61 Q32 61 32 71Z" fill="none" stroke="#c4923a" stroke-width="0.5" opacity="0.4"/>
+
+            <!-- 羅馬數字：baseline y=75，字在 y=62~75，完全在拱形內(y=58~) -->
+            <text id="svgRoman" x="75" y="76" text-anchor="middle" fill="#8b5e2a" font-family="serif" font-size="12" font-style="italic" font-weight="bold">O</text>
+            <line x1="44" y1="81" x2="106" y2="81" stroke="#c4923a" stroke-width="0.6" opacity="0.4"/>
+
+            <!-- 符號：拱形中央 (58+193)/2=125.5，dominant-baseline=middle -->
+            <text id="svgSymbol" x="75" y="136" text-anchor="middle" dominant-baseline="middle" font-size="36">✦</text>
+
+            <line x1="44" y1="163" x2="106" y2="163" stroke="#c4923a" stroke-width="0.6" opacity="0.4"/>
+
+            <!-- 側邊藤蔓 -->
+            <g stroke="#8b5e2a" stroke-width="0.8" fill="none" opacity="0.5">
+              <path d="M15 72 Q8 88 12 104 Q17 120 11 136"/>
+              <path d="M15 84 Q6 82 5 89 Q9 96 16 92"/>
+              <path d="M135 72 Q142 88 138 104 Q133 120 139 136"/>
+              <path d="M135 84 Q144 82 145 89 Q141 96 134 92"/>
+            </g>
+            <g fill="#b8834a" opacity="0.35">
+              <path d="M5 82 Q11 76 15 84 Q9 88 5 82Z"/>
+              <path d="M145 82 Q139 76 135 84 Q141 88 145 82Z"/>
+            </g>
+
+            <!-- 底部文字框 y:196~238，高42，兩行文字垂直置中 -->
+            <rect x="38" y="196" width="74" height="42" rx="6" fill="#f0e4c0" stroke="#8b5e2a" stroke-width="1"/>
+            <!-- 牌名 baseline y=213（框頂196+17） -->
+            <text id="svgName" x="75" y="213" text-anchor="middle" fill="#5a3010" font-family="serif" font-size="12" font-weight="bold">愚者</text>
+            <line x1="48" y1="218" x2="102" y2="218" stroke="#c4923a" stroke-width="0.4" opacity="0.35"/>
+            <!-- 正逆位 baseline y=230（框底238-8） -->
+            <text id="svgOrientation" x="75" y="231" text-anchor="middle" fill="#7a5020" font-family="serif" font-size="10">正位</text>
+
+            <!-- 角落圓飾 -->
+            <g fill="none" stroke="#8b5e2a" stroke-width="0.8" opacity="0.45">
+              <circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="2"/>
+              <circle cx="138" cy="12" r="4"/><circle cx="138" cy="12" r="2"/>
+              <circle cx="12" cy="238" r="4"/><circle cx="12" cy="238" r="2"/>
+              <circle cx="138" cy="238" r="4"/><circle cx="138" cy="238" r="2"/>
+            </g>
+          </svg>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- 抽牌按鈕 -->
+    <button onclick="drawTarot()" style="width:100%;background:linear-gradient(135deg,#8b5e2a,#c4923a);border:none;border-radius:10px;color:#f8f0e0;font-family:'Noto Serif TC',serif;font-size:14px;font-weight:600;padding:11px;cursor:pointer;margin-bottom:14px;letter-spacing:1px;">✦ 重新抽牌 ✦</button>
+
+    <!-- 結果 -->
+    <div id="tarotResult" style="display:none;">
+      <div style="border-top:1px solid #d4b896;padding-top:14px;">
+        <div id="tarotResultTitle" style="font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:#5a3010;margin-bottom:4px;"></div>
+        <div id="tarotResultSub" style="font-family:'Noto Serif TC',serif;font-size:13px;color:#8b5e2a;margin-bottom:12px;font-weight:600;"></div>
+        <div id="tarotKeywords" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;"></div>
+        <div id="tarotDesc" style="font-family:'Noto Serif TC',serif;font-size:14px;color:#6b4020;line-height:1.85;"></div>
+      </div>
+    </div>
+  </div>
+</div>
 </div><!-- /page -->
 
 
@@ -921,6 +1066,7 @@ function switchTab(tab, el) {
   document.querySelectorAll('.page-section').forEach(function(s){ s.classList.remove('active'); });
   el.classList.add('active');
   document.getElementById('sec-' + tab).classList.add('active');
+  if (tab === 'daily') initDailyTab();
   if (tab === 'dash') renderDash();
   if (tab === 'diary') loadDiaryUI();
   if (tab === 'yearly') renderYearly();
@@ -1004,8 +1150,10 @@ function showDiaryReadView() {
   document.getElementById('diaryReadContent').innerHTML = html;
   // 顯示閱讀卡片，摺疊編輯區
   document.getElementById('diaryReadCard').style.display = 'block';
-  document.getElementById('diaryFormCollapse').style.maxHeight = '0';
-  document.getElementById('diaryFormCollapse').style.opacity = '0';
+  var fc = document.getElementById('diaryFormCollapse');
+  fc.classList.add('collapsed');
+  fc.style.maxHeight = '';
+  fc.style.opacity = '';
   document.getElementById('diaryFormArrow').classList.remove('open');
 }
 function deleteDiary() {
@@ -1033,8 +1181,10 @@ function deleteDiary() {
 }
 function showDiaryEditView() {
   document.getElementById('diaryReadCard').style.display = 'none';
-  document.getElementById('diaryFormCollapse').style.maxHeight = '2000px';
-  document.getElementById('diaryFormCollapse').style.opacity = '1';
+  var fc = document.getElementById('diaryFormCollapse');
+  fc.classList.remove('collapsed');
+  fc.style.maxHeight = '';
+  fc.style.opacity = '';
   document.getElementById('diaryFormArrow').classList.add('open');
 }
 function toggleForm(id) { document.getElementById(id).classList.toggle('open'); }
@@ -1733,7 +1883,7 @@ function removePhoto(i) { curPhotoIdx = i; photoMenuDel(); }
     el.addEventListener('touchend',   onEnd);
     el.addEventListener('mousedown',  onStart);
     el.addEventListener('mouseup',    onEnd);
-  });
+});
   // 點別的地方關閉選單
   document.addEventListener('click', function(e) {
     var btn = document.getElementById('photoMenuBtn');
@@ -2146,6 +2296,304 @@ renderYearly();
 updateBottomBar();
 loadDiaryUI();
 autoLoadOnStart();
+
+// ══════════════════════════════════════
+// 每日小語
+// ══════════════════════════════════════
+var QUOTES = [
+  {q:'你今天的努力，是明天的禮物。',a:''},
+  {q:'不要因為走得太慢而感到羞恥，只要你沒有停下來。',a:'孔子'},
+  {q:'每一個你不喜歡的當下，都是你改變的機會。',a:''},
+  {q:'生活中最重要的不是你所在的位置，而是你前進的方向。',a:'奧利弗·霍姆斯'},
+  {q:'勇氣不是感到恐懼的缺失，而是判斷其他事情比恐懼更重要。',a:'安布羅斯·雷德蒙'},
+  {q:'每一天都是新的開始，帶著希望醒來。',a:''},
+  {q:'你比你想像的更勇敢，比你看起來更強壯，比你認為的更聰明。',a:'小熊維尼'},
+  {q:'成功不是終點，失敗不是終結，繼續前行才是最重要的。',a:'邱吉爾'},
+  {q:'相信自己，你比你知道的更有能力。',a:''},
+  {q:'不論你走多慢，只要你不停下，就是進步。',a:''},
+  {q:'把每一個清晨當作生命的開始，把每一個黃昏當作生命的小結。',a:'約翰·羅斯金'},
+  {q:'你不需要完美，你只需要開始。',a:''},
+  {q:'人生沒有白走的路，每一步都算數。',a:''},
+  {q:'當你感到疲憊，不要放棄，休息一下再繼續。',a:''},
+  {q:'你的潛力是無限的，只要你願意相信。',a:''},
+  {q:'每一次跌倒都是重新認識自己的機會。',a:''},
+  {q:'做自己喜歡的事，喜歡自己做的事。',a:''},
+  {q:'改變你能改變的，接受你無法改變的，並學會分辨兩者的不同。',a:'聖方濟各'},
+  {q:'今天比昨天好一點點，就是成長。',a:''},
+  {q:'你的努力不會被辜負，時間會給你答案。',a:''},
+  {q:'不要等待完美的時機，現在就是最好的時機。',a:''},
+  {q:'種一棵樹最好的時間是十年前，其次是現在。',a:'中國諺語'},
+  {q:'每個人都是自己生命故事的主角。',a:''},
+  {q:'讓微笑成為你每天最美的妝容。',a:''},
+  {q:'即使昨天有多難，你還是撐過來了。',a:''},
+  {q:'你所經歷的一切，都在讓你變得更好。',a:''},
+  {q:'生命中最美好的事情，往往是意料之外的。',a:''},
+  {q:'只要心中有光，黑暗也無法奪走你的希望。',a:''},
+  {q:'活在當下，每一刻都值得珍惜。',a:''},
+  {q:'你有能力創造你想要的生活。',a:''},
+  {q:'困難是暫時的，成長是永恆的。',a:''},
+  {q:'讓過去成為你的老師，而不是你的監獄。',a:''},
+  {q:'相信過程，結果自然會來。',a:''},
+  {q:'你的善良是你最大的力量。',a:''},
+  {q:'每一個夢想都值得被認真對待。',a:''},
+  {q:'不完美的行動勝過完美的計劃。',a:''},
+  {q:'你的存在本身就是一種美好。',a:''},
+  {q:'試著每天比昨天的自己更好一點。',a:''},
+  {q:'把注意力放在你擁有的，而不是你沒有的。',a:''},
+  {q:'每一次呼吸都是重新開始的機會。',a:''},
+  {q:'堅持下去，因為你比你知道的更強大。',a:''},
+  {q:'讓愛成為你前進的動力。',a:''},
+  {q:'你今天的選擇，塑造明天的你。',a:''},
+  {q:'生命是一場旅行，不是一個目的地。',a:'拉爾夫·沃爾多·愛默生'},
+  {q:'如果你相信自己，就沒有什麼是不可能的。',a:''},
+  {q:'快樂是一種選擇，每天都可以重新選擇。',a:''},
+  {q:'你的故事還沒結束，最精彩的部分還在後面。',a:''},
+  {q:'真正的勇氣是在害怕的時候仍然前進。',a:''},
+  {q:'給自己多一點耐心，你正在成長中。',a:''},
+  {q:'即使最漫長的旅程，也是從第一步開始的。',a:'老子'},
+  {q:'你值得一切美好的事物。',a:''},
+  {q:'每一個挑戰都是偽裝的禮物。',a:''},
+  {q:'停止懷疑自己，世界上已經有足夠多的懷疑者了。',a:''},
+  {q:'你的笑容可以改變別人的一天。',a:''},
+  {q:'做一個讓自己驕傲的人。',a:''},
+  {q:'今天播下的種子，明天會開出花朵。',a:''},
+  {q:'生命中沒有白費的努力，只有還未看見成果的堅持。',a:''},
+  {q:'你比昨天更有智慧，比明天更有潛力。',a:''},
+  {q:'每天找一件值得感恩的事。',a:''},
+  {q:'困境是成長最好的土壤。',a:''},
+  {q:'相信時間的力量，它會改變一切。',a:''},
+  {q:'你的努力都是有意義的，即使現在還看不見。',a:''},
+  {q:'用愛心對待自己，就像對待最好的朋友一樣。',a:''},
+  {q:'每一個小小的進步都值得慶祝。',a:''},
+  {q:'你的生命有無限的可能性，只要你敢去追求。',a:''},
+  {q:'今天，做一件讓你開心的事。',a:''},
+  {q:'即使步伐緩慢，只要持續前進，終將抵達目標。',a:''},
+  {q:'你是自己最好的依靠，也是自己最忠實的朋友。',a:''},
+  {q:'讓感恩成為你每天的習慣。',a:''},
+  {q:'每一次失敗都讓你距成功更近一步。',a:''},
+  {q:'生命的意義在於你如何選擇活著。',a:''},
+  {q:'你有力量改變你的故事。',a:''},
+  {q:'最好的投資，是投資在自己身上。',a:''},
+  {q:'記住：你已經走過了所有最艱難的日子。',a:''},
+  {q:'放下昨天，擁抱今天，期待明天。',a:''},
+  {q:'你的心態決定你的高度。',a:''},
+  {q:'不要害怕慢，只要害怕停。',a:'中國諺語'},
+  {q:'今天的你比昨天更好，已經足夠了。',a:''},
+  {q:'你所付出的每一分努力，都在默默累積。',a:''},
+  {q:'相信自己的直覺，它比你想的更可靠。',a:''},
+  {q:'每天給自己一個微笑，因為你值得。',a:''},
+  {q:'山不過來，我就過去。人生就是如此。',a:''},
+  {q:'你的溫柔是這個世界需要的。',a:''},
+  {q:'每一段黑暗之後，都有光明在等待。',a:''},
+  {q:'做自己，因為其他人都已經有人做了。',a:'王爾德'},
+  {q:'你已經足夠好了，同時也在不斷變得更好。',a:''},
+  {q:'把每一天都當作一份禮物來打開。',a:''},
+  {q:'你的夢想值得你全力以赴。',a:''},
+  {q:'今天的挑戰，是明天的勳章。',a:''},
+  {q:'愛自己，是一生中最重要的功課。',a:''},
+  {q:'你不需要別人的允許來活出真實的自己。',a:''},
+  {q:'每一個當下都是生命中最美好的時刻。',a:''},
+  {q:'你的善意會以意想不到的方式回到你身邊。',a:''},
+  {q:'慢慢來，比較快。',a:'台灣諺語'},
+  {q:'你有資格佔據空間，你有資格被愛。',a:''},
+  {q:'今天，給自己一個溫柔的擁抱。',a:''}
+];
+
+var todayQuoteIdx = -1;
+function getTodayQuoteIdx() {
+  var d = new Date(); 
+  return (d.getFullYear()*10000 + (d.getMonth()+1)*100 + d.getDate()) % QUOTES.length;
+}
+function refreshQuote() {
+  todayQuoteIdx = (todayQuoteIdx + 1) % QUOTES.length;
+  renderQuote(todayQuoteIdx);
+}
+function renderQuote(idx) {
+  var q = QUOTES[idx];
+  document.getElementById('dailyQuote').textContent = '\u300c' + q.q + '\u300d';
+  document.getElementById('dailyQuoteAuthor').textContent = q.a ? '—\u2002' + q.a : '';
+}
+
+// ══════════════════════════════════════
+// 塔羅牌 22 張大阿爾克那
+// ══════════════════════════════════════
+var TAROT = [
+  {num:'0', roman:'O', name:'愚者', symbol:'🌟',
+   up:{title:'正位：新的開始',keywords:['自由','冒險','純真','可能性'],
+       desc:'愚者代表一段新旅程的開始。此刻的你充滿勇氣和好奇心，願意踏入未知。放下過去的包袱，帶著開放的心去迎接生命帶來的一切。相信自己的直覺，勇敢跨出第一步。'},
+   rev:{title:'逆位：魯莽或猶豫',keywords:['衝動','優柔寡斷','逃避'],
+       desc:'逆位愚者提醒你在行動前多加思考，避免因衝動而做出後悔的決定。也可能代表你過於害怕改變而裹足不前。試著找到勇氣與謹慎之間的平衡。'}},
+  {num:'I', roman:'I', name:'魔術師', symbol:'⚡',
+   up:{title:'正位：意志與創造',keywords:['意志力','技巧','自信','創造力'],
+       desc:'魔術師擁有實現夢想所需的一切工具。此刻你充滿能量，有能力將想法化為現實。集中你的意志力，善用你的才能，你有能力創造你所渴望的一切。'},
+   rev:{title:'逆位：能力未發揮',keywords:['欺騙','潛力未現','缺乏自信'],
+       desc:'逆位魔術師暗示你的才能尚未得到充分發揮，或者你正在欺騙自己或他人。重新審視你的動機，找回內在的力量和真實性。'}},
+  {num:'II', roman:'II', name:'女祭司', symbol:'🌙',
+   up:{title:'正位：直覺與智慧',keywords:['直覺','潛意識','神秘','智慧'],
+       desc:'女祭司代表深層的智慧和直覺。此刻是向內探索的時刻，聆聽你內心深處的聲音。答案就在你自己之中，信任你的直覺，它比你想象的更可靠。'},
+   rev:{title:'逆位：壓抑直覺',keywords:['秘密','表面知識','忽視直覺'],
+       desc:'逆位女祭司提示你正在忽視自己的直覺，過於依賴理性分析。試著靜下心來，傾聽內心的聲音，有些事情需要感受而非思考。'}},
+  {num:'III', roman:'III', name:'女皇', symbol:'🌸',
+   up:{title:'正位：豐盛與創造',keywords:['豐盛','創造力','母性','自然'],
+       desc:'女皇代表豐盛、美麗和創造力。此刻是滋養和成長的時期，你的創造力旺盛，生活充滿豐盛。擁抱你的感性，享受生命的美好，允許自己被愛與被照顧。'},
+   rev:{title:'逆位：創造力受阻',keywords:['依賴','窒息','自我忽視'],
+       desc:'逆位女皇提醒你可能過於依賴他人，或者忽視了自我照顧的重要性。找回自己的創造力和獨立性，學習愛自己是一切豐盛的基礎。'}},
+  {num:'IV', roman:'IV', name:'皇帝', symbol:'👑',
+   up:{title:'正位：權威與穩定',keywords:['秩序','紀律','保護','結構'],
+       desc:'皇帝代表穩定、秩序和權威。此刻需要你展現領導力，建立清晰的結構和界限。通過紀律和規律，你能夠建立穩固的基礎，實現長期目標。'},
+   rev:{title:'逆位：過度控制',keywords:['霸道','不靈活','缺乏紀律'],
+       desc:'逆位皇帝警示你可能過於控制，缺乏彈性。也可能表示你在某些方面缺乏紀律和秩序。學習在控制與放手之間找到平衡。'}},
+  {num:'V', roman:'V', name:'教皇', symbol:'✝️',
+   up:{title:'正位：傳統與指引',keywords:['傳統','信仰','智慧','導師'],
+       desc:'教皇代表精神指引、傳統和制度性智慧。此刻也許你需要向有經驗的人尋求建議，或者遵循傳統的方式。信任已被驗證的智慧，在社群中尋找支持。'},
+   rev:{title:'逆位：打破傳統',keywords:['質疑權威','非傳統','個人信念'],
+       desc:'逆位教皇鼓勵你質疑傳統和權威，尋找自己獨特的精神道路。不要盲目遵從，勇敢追求符合自己內心真實的信仰和價值觀。'}},
+  {num:'VI', roman:'VI', name:'戀人', symbol:'💕',
+   up:{title:'正位：愛與選擇',keywords:['愛','和諧','價值觀','選擇'],
+       desc:'戀人不只代表愛情，更代表一個重要的選擇時刻。此刻需要你傾聽內心，做出符合自己真實價值觀的決定。在關係中尋找真正的連結與和諧。'},
+   rev:{title:'逆位：失衡與衝突',keywords:['失衡','價值觀衝突','分離'],
+       desc:'逆位戀人暗示關係中的失衡或價值觀衝突。也許你在面對選擇時感到困惑，或者正在一段不和諧的關係中掙扎。重新審視你真正需要的是什麼。'}},
+  {num:'VII', roman:'VII', name:'戰車', symbol:'🏆',
+   up:{title:'正位：意志與勝利',keywords:['決心','控制','勝利','前進'],
+       desc:'戰車代表意志力、自我控制和勝利。你正朝著目標前進，克服障礙。保持堅定的決心，整合你內在的矛盾力量，勝利就在前方等待著你。'},
+   rev:{title:'逆位：失控與阻礙',keywords:['失控','侵略性','阻礙'],
+       desc:'逆位戰車提示你可能感到失去控制，或者用過於強硬的方式推進。放慢腳步，重新評估你前進的方向，有時候退一步是為了更好地前進。'}},
+  {num:'VIII', roman:'VIII', name:'力量', symbol:'🦁',
+   up:{title:'正位：內在力量',keywords:['勇氣','耐心','溫柔的力量','自信'],
+       desc:'力量代表的不是蠻力，而是內在的堅毅和溫柔的控制。此刻你擁有足夠的勇氣和耐心去面對任何挑戰。用愛和理解去征服困難，而不是用武力。'},
+   rev:{title:'逆位：懷疑自我',keywords:['不安全感','缺乏信心','焦慮'],
+       desc:'逆位力量提示你正在懷疑自己的能力，內在力量尚未被充分喚醒。給自己多一點耐心和慈悲，重新連接你內心深處那份不可動搖的力量。'}},
+  {num:'IX', roman:'IX', name:'隱士', symbol:'🕯️',
+   up:{title:'正位：獨處與反思',keywords:['沉思','獨處','指引','內省'],
+       desc:'隱士呼喚你向內尋找，在獨處中尋求智慧。此刻是反思和沉澱的時期，抽離喧囂，聆聽內心深處的聲音。你擁有指引自己的智慧。'},
+   rev:{title:'逆位：孤立與迷失',keywords:['孤立','退縮','迷失方向'],
+       desc:'逆位隱士警示過度孤立可能導致迷失。此刻也許你需要打開心扉，接受他人的連結和支持。在獨處與社交之間找到健康的平衡。'}},
+  {num:'X', roman:'X', name:'命運之輪', symbol:'☸️',
+   up:{title:'正位：轉機與循環',keywords:['命運','轉變','機遇','循環'],
+       desc:'命運之輪象徵生命的循環與轉變。好運正在向你靠近，一個新的周期即將開始。擁抱變化，相信宇宙的安排，此刻的轉折將為你帶來新的機遇。'},
+   rev:{title:'逆位：抗拒變化',keywords:['壞運氣','抗拒改變','外力阻礙'],
+       desc:'逆位命運之輪可能代表你正在抗拒生命中不可避免的改變，或者正處於運氣低迷的階段。接受你無法控制的事情，學習在變化中保持內心的平靜。'}},
+  {num:'XI', roman:'XI', name:'正義', symbol:'⚖️',
+   up:{title:'正位：公正與真相',keywords:['公正','真相','因果','平衡'],
+       desc:'正義代表因果報應和公平。此刻你的行為和決定將得到公正的評判。誠實面對自己，做出符合良心的選擇。每個行動都有其後果，正直地前行。'},
+   rev:{title:'逆位：不公與逃避',keywords:['不公正','逃避責任','不誠實'],
+       desc:'逆位正義提示你可能面對不公正的情況，或者在逃避應負的責任。勇敢面對真相，承擔自己的責任，只有誠實才能帶來真正的解脫。'}},
+  {num:'XII', roman:'XII', name:'倒吊人', symbol:'🌿',
+   up:{title:'正位：暫停與新視角',keywords:['暫停','犧牲','新視角','接受'],
+       desc:'倒吊人邀請你暫停腳步，從不同角度看待事情。此刻的等待和犧牲是有意義的，它讓你獲得全新的洞見。放下控制，接受現況，智慧將在靜止中浮現。'},
+   rev:{title:'逆位：拒絕放下',keywords:['頑固','拖延','無謂犧牲'],
+       desc:'逆位倒吊人提示你在頑固地堅持某種對你無益的事物。停止無謂的拖延，勇敢做出你一直逃避的決定。有時候放下才是真正的自由。'}},
+  {num:'XIII', roman:'XIII', name:'死神', symbol:'🦋',
+   up:{title:'正位：結束與轉化',keywords:['轉化','結束','過渡','改變'],
+       desc:'死神牌並不代表身體死亡，而是象徵舊有事物的結束和轉化。一個章節即將關閉，讓新的開始成為可能。放下過時的事物，擁抱蛻變，轉化正在發生。'},
+   rev:{title:'逆位：抗拒改變',keywords:['停滯','腐朽','拒絕結束'],
+       desc:'逆位死神代表你在抗拒必要的改變，緊緊抓住早該放手的事物。停滯和腐朽正在阻礙你的成長。鼓起勇氣，讓不再服務你的一切優雅地離去。'}},
+  {num:'XIV', roman:'XIV', name:'節制', symbol:'🌊',
+   up:{title:'正位：平衡與耐心',keywords:['平衡','耐心','調和','中庸'],
+       desc:'節制代表平衡、調和與耐心。此刻需要你以溫和、穩定的方式前進，融合生命中看似對立的元素。不急不躁，在耐心中找到真正的和諧與平衡。'},
+   rev:{title:'逆位：失衡與過度',keywords:['過激','失衡','衝突'],
+       desc:'逆位節制提示你生活中某些方面出現了失衡，可能走向極端。重新審視你的優先順序，找回生活的節奏和和諧。適度才是長久之道。'}},
+  {num:'XV', roman:'XV', name:'惡魔', symbol:'⛓️',
+   up:{title:'正位：束縛與陰影',keywords:['束縛','物質主義','陰影面','上癮'],
+       desc:'惡魔揭示你生命中的束縛和執念。也許你被物質欲望、恐懼或不健康的關係所困。正視自己的陰暗面，只有當你認識這些枷鎖，你才能真正獲得自由。'},
+   rev:{title:'逆位：掙脫束縛',keywords:['解放','覺醒','打破枷鎖'],
+       desc:'逆位惡魔是一個解放的信號！你正在意識到束縛你的枷鎖，並開始掙脫它們。這是覺醒的時刻，繼續這條通往自由的道路，你比你想的更有力量。'}},
+  {num:'XVI', roman:'XVI', name:'高塔', symbol:'⚡',
+   up:{title:'正位：突破與崩解',keywords:['突變','崩解','混亂','啟示'],
+       desc:'高塔代表突如其來的顛覆和崩解。雖然這看起來是破壞性的，但它是必要的。虛假的結構正在崩潰，為真實的重建清出空間。這場動盪之後，是更真實的自由。'},
+   rev:{title:'逆位：逃避崩解',keywords:['逃避改變','延遲危機','內在動盪'],
+       desc:'逆位高塔表示你正在逃避一場必要的變革，或者緩和了衝擊的程度。內在的動盪仍在積累，與其逃避，不如主動面對需要改變的部分。'}},
+  {num:'XVII', roman:'XVII', name:'星星', symbol:'⭐',
+   up:{title:'正位：希望與靈感',keywords:['希望','靈感','療癒','平靜'],
+       desc:'星星是塔羅中最充滿希望的牌之一。在經歷風浪之後，平靜與療癒正在到來。相信未來，讓希望的光芒指引你。此刻宇宙正在以溫柔的方式支持你。'},
+   rev:{title:'逆位：絕望與失去信念',keywords:['絕望','不信任','幻滅'],
+       desc:'逆位星星提示你暫時失去了希望和方向感。請記住，黑暗之後必有黎明。給自己時間療癒，重新連接那個充滿希望的自己，星光始終都在。'}},
+  {num:'XVIII', roman:'XVIII', name:'月亮', symbol:'🌙',
+   up:{title:'正位：幻覺與潛意識',keywords:['幻覺','恐懼','潛意識','夢境'],
+       desc:'月亮代表潛意識、幻覺和隱藏的恐懼。事情可能並不如表面所見，某些恐懼正在影響你的判斷。深入探索你的夢境和直覺，不要被表象所迷惑。'},
+   rev:{title:'逆位：走出迷霧',keywords:['清晰','恐懼消散','真相浮現'],
+       desc:'逆位月亮意味著迷霧正在散去，真相即將浮現。你開始走出恐懼和幻覺的陰影，重新獲得清晰的判斷力。繼續誠實面對自己，光明就在前方。'}},
+  {num:'XIX', roman:'XIX', name:'太陽', symbol:'☀️',
+   up:{title:'正位：喜悅與成功',keywords:['喜悅','成功','活力','豐盛'],
+       desc:'太陽是塔羅中最吉祥的牌之一，代表純粹的喜悅、成功和活力。此刻一切都充滿光明，你的努力將獲得豐盛的回報。盡情享受這段美好的時光，你值得這一切。'},
+   rev:{title:'逆位：過度樂觀',keywords:['過度自信','短暫的幸福','延遲的成功'],
+       desc:'逆位太陽提醒你保持清醒的樂觀，避免過度自信或不切實際的期望。成功仍在前方，只是可能需要更多的耐心。調整期望，保持穩健前進。'}},
+  {num:'XX', roman:'XX', name:'審判', symbol:'🎺',
+   up:{title:'正位：覺醒與重生',keywords:['覺醒','救贖','內心的呼喚','轉化'],
+       desc:'審判代表深刻的覺醒和靈魂的重生。你正在聽到內心深處的呼喚，是時候放下過去的判斷和遺憾，完全接受並原諒自己。一個嶄新的你正在蛻變而生。'},
+   rev:{title:'逆位：自我懷疑',keywords:['自我批判','逃避審判','停滯'],
+       desc:'逆位審判提示你過度自我批判，或者逃避面對生命中某些需要解決的事情。學習原諒自己，放下自我審判，讓真正的療癒和轉化得以發生。'}},
+  {num:'XXI', roman:'XXI', name:'世界', symbol:'🌍',
+   up:{title:'正位：完成與整合',keywords:['完整','成就','整合','圓滿'],
+       desc:'世界代表一個完整的循環，是完成與成就的象徵。你達到了一個重要的里程碑，一個章節圓滿結束。慶祝你的成就，同時為下一段旅程做好準備。'},
+   rev:{title:'逆位：未竟之事',keywords:['未完成','短視','缺乏閉幕'],
+       desc:'逆位世界提示你有些事情尚未完成，或者你在接近終點時失去了耐心。找出是什麼阻礙你走完這段旅程，完成它，讓這個循環得以真正圓滿地落幕。'}}
+];
+
+var tarotFlipped = false;
+var currentTarotIdx = -1;
+var currentTarotRev = false;
+
+function drawTarot() {
+  currentTarotIdx = Math.floor(Math.random() * TAROT.length);
+  currentTarotRev = Math.random() > 0.5;
+  tarotFlipped = false;
+  var back = document.getElementById('tarotBack');
+  var face = document.getElementById('tarotFaceDiv');
+  if (back) back.style.display = 'block';
+  if (face) face.style.display = 'none';
+  document.getElementById('tarotResult').style.display = 'none';
+}
+
+function flipTarot() {
+  if (currentTarotIdx < 0) drawTarot();
+  var card = TAROT[currentTarotIdx];
+  var back = document.getElementById('tarotBack');
+  var face = document.getElementById('tarotFaceDiv');
+  if (!tarotFlipped) {
+    document.getElementById('svgSymbol').textContent = card.symbol;
+    document.getElementById('svgRoman').textContent = card.roman;
+    document.getElementById('svgName').textContent = card.name;
+    document.getElementById('svgOrientation').textContent = currentTarotRev ? '逆位' : '正位';
+    back.style.display = 'none';
+    face.style.display = 'block';
+    face.style.opacity = '0';
+    face.style.transition = 'opacity 0.4s ease';
+    setTimeout(function(){ face.style.opacity = '1'; }, 20);
+    tarotFlipped = true;
+    setTimeout(function(){
+      var reading = currentTarotRev ? card.rev : card.up;
+      document.getElementById('tarotResultTitle').textContent = card.name + '（' + (currentTarotRev ? '逆位' : '正位') + '）';
+      document.getElementById('tarotResultSub').textContent = reading.title;
+      var kwHtml = reading.keywords.map(function(k){
+        return '<span style="background:#f0e4c0;color:#8b5e2a;font-family:\'Noto Serif TC\',serif;font-size:12px;padding:3px 10px;border-radius:20px;border:1px solid #c4923a;">'+k+'</span>';
+      }).join('');
+      document.getElementById('tarotKeywords').innerHTML = kwHtml;
+      document.getElementById('tarotDesc').textContent = reading.desc;
+      document.getElementById('tarotResult').style.display = 'block';
+    }, 450);
+  } else {
+    face.style.display = 'none';
+    back.style.display = 'block';
+    tarotFlipped = false;
+    document.getElementById('tarotResult').style.display = 'none';
+  }
+}
+
+// 初始化每日小語
+function initDailyTab() {
+  todayQuoteIdx = getTodayQuoteIdx();
+  renderQuote(todayQuoteIdx);
+  drawTarot();
+}
+
+
+// 直接初始化，不依賴 DOMContentLoaded
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initDailyTab);
+} else {
+  initDailyTab();
+}
 </script>
 </body>
 </html>
