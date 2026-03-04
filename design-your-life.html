@@ -170,19 +170,32 @@ input[type="date"].form-input{padding:8px 10px;font-size:13px;}
 .saved-badge{text-align:center;font-family:'Noto Serif TC',serif;font-size:14px;color:var(--accent);padding:5px;opacity:0;transition:opacity .3s;}
 .saved-badge.show{opacity:1;}
 /* ── Diary read view ── */
-.diary-stamp{display:inline-block;transform:rotate(-10deg);filter:drop-shadow(2px 3px 6px rgba(100,140,160,0.35));opacity:0.92;flex-shrink:0;}
-.diary-read-view{padding:16px;}
-.diary-read-photo{width:100%;max-height:280px;object-fit:cover;display:block;}
-.diary-read-mood{font-size:30px;margin-bottom:8px;}
-.diary-read-date{font-family:'Noto Serif TC',serif;font-size:13px;color:var(--ink3);margin-bottom:14px;}
-.diary-read-section{margin-bottom:14px;}
-.diary-read-label{font-family:'Playfair Display',serif;font-style:italic;font-size:15px;color:var(--accent);font-weight:700;margin-bottom:5px;}
+.diary-read-card{
+  position:relative;border-radius:var(--r);overflow:hidden;
+  margin-top:2px;margin-bottom:12px;
+  box-shadow:0 1px 8px rgba(0,0,0,0.08),0 0 0 1px rgba(0,0,0,0.05);
+  background:#f5f4f0;
+}
+/* 格線背景，z-index:0 */
+.diary-read-ruled{display:none;}
+/* 所有內容都在 z-index:1 以上 */
+.diary-read-photo-wrap{position:relative;z-index:1;overflow:hidden;border-radius:var(--r) var(--r) 0 0;}
+.diary-read-photo-wrap img{width:100%;max-height:240px;object-fit:cover;display:block;}
+.diary-read-body{position:relative;z-index:1;padding:18px 18px 20px 18px;}
+.diary-read-header{display:flex;align-items:center;gap:8px;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid rgba(180,180,175,0.5);}
+.diary-read-mood{font-size:22px;line-height:1;}
+.diary-read-date{font-family:'Caveat',cursive;font-size:22px;color:#1a1a1a;font-weight:600;letter-spacing:.5px;}
+.diary-read-section{margin-bottom:16px;}
+.diary-read-label{font-family:'Playfair Display',serif;font-style:italic;font-size:15px;color:#b07050;font-weight:700;margin-bottom:7px;}
 .diary-read-items{display:flex;flex-direction:column;gap:5px;}
-.diary-read-item{font-family:'Caveat',cursive;font-size:17px;color:var(--ink);display:flex;gap:7px;}
-.diary-read-item-num{color:var(--accent);font-weight:600;flex-shrink:0;}
-.diary-read-text{font-family:'Caveat',cursive;font-size:17px;line-height:1.85;color:var(--ink);white-space:pre-wrap;}
-.diary-read-footer{display:flex;align-items:center;justify-content:flex-start;gap:8px;margin-top:14px;padding-top:10px;border-top:1px solid var(--border);}
-.diary-read-edit-btn{font-family:'Noto Serif TC',serif;font-size:13px;color:var(--ink3);background:none;border:1.5px solid var(--border);border-radius:9px;padding:6px 14px;cursor:pointer;display:inline-flex;align-items:center;gap:4px;text-decoration:none;}
+.diary-read-item{font-family:'Caveat',cursive;font-size:17px;color:#222;display:flex;gap:7px;}
+.diary-read-item-num{color:#c08878;font-weight:600;flex-shrink:0;}
+.diary-read-text{font-family:'Caveat',cursive;font-size:17px;line-height:2.0;color:#222;white-space:pre-wrap;}
+.diary-read-footer{display:flex;align-items:center;justify-content:flex-start;gap:8px;margin-top:20px;padding-top:14px;border-top:1.5px solid rgba(180,180,175,0.45);padding-bottom:16px;}
+.diary-read-edit-btn{font-family:'Noto Serif TC',serif;font-size:12px;border:none;border-radius:8px;padding:6px 14px;cursor:pointer;font-weight:500;opacity:0.82;}
+.btn-edit{background:var(--accent);color:#fff;}
+.btn-del{background:#eee;color:#aaa;}
+.diary-stamp{display:inline-block;transform:rotate(-12deg);filter:drop-shadow(1px 2px 5px rgba(80,60,40,0.22));opacity:0.88;pointer-events:none;}
 /* ── Diary collapse toggle ── */
 .diary-toggle-row{display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:10px 0 6px;user-select:none;}
 .diary-toggle-title{font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--ink);}
@@ -401,23 +414,19 @@ input[type="date"].form-input{padding:8px 10px;font-size:13px;}
   <div class="card" id="diaryEditCard" style="padding:0;overflow:hidden;margin-top:2px;">
     <div id="photoStrip" style="display:none;position:relative;">
       <img id="photoMain" class="diary-photo-main" src="" alt=""/>
-      <!-- 左右切換指示點 -->
       <div id="photoDots" style="position:absolute;bottom:10px;left:50%;transform:translateX(-50%);display:flex;gap:5px;"></div>
-      <!-- 右上角操作按鈕 -->
       <button id="photoMenuBtn" onclick="togglePhotoMenu()" style="position:absolute;top:10px;right:10px;background:rgba(0,0,0,0.45);border:none;border-radius:20px;color:#fff;font-size:16px;padding:4px 10px;cursor:pointer;backdrop-filter:blur(4px);z-index:10;">⋯</button>
-      <!-- 浮出選單 -->
       <div id="photoMenuPop" style="display:none;position:absolute;top:40px;right:10px;background:var(--paper);border:1.5px solid var(--border);border-radius:12px;box-shadow:0 4px 20px rgba(44,36,22,0.15);z-index:20;overflow:hidden;min-width:150px;">
-        <label onclick="closePhotoMenu();" style="display:block;width:100%;border-bottom:1px solid var(--border);color:var(--ink);font-family:'Caveat',cursive;font-size:15px;padding:12px 16px;cursor:pointer;text-align:left;box-sizing:border-box;">＋ 新增照片
-          <input type="file" accept="image/*" multiple style="position:absolute;width:0;height:0;opacity:0;" onchange="handleImages(event)"/>
-        </label>
-        <button onclick="photoMenuDel()" style="width:100%;background:none;border:none;color:#e05050;font-family:'Caveat',cursive;font-size:15px;padding:12px 16px;cursor:pointer;text-align:left;">🗑 刪除此張</button>
+        <button onclick="photoMenuAdd()" style="width:100%;background:none;border:none;border-bottom:1px solid var(--border);color:var(--ink);font-family:'Noto Serif TC',serif;font-size:15px;padding:12px 16px;cursor:pointer;text-align:left;">＋ 新增照片</button>
+        <button onclick="photoMenuDel()" style="width:100%;background:none;border:none;color:#e05050;font-family:'Noto Serif TC',serif;font-size:15px;padding:12px 16px;cursor:pointer;text-align:left;">刪除此張</button>
       </div>
     </div>
     <div style="padding:14px">
-      <label id="uploadArea" class="upload-area" style="display:block;cursor:pointer;">
+      <div id="uploadArea" class="upload-area" onclick="document.getElementById('imgInput').click()" style="cursor:pointer;">
         <span class="upload-label">📷 點擊上傳照片</span>
-        <input type="file" id="imgInputNested" accept="image/*" multiple style="position:absolute;width:0;height:0;opacity:0;" onchange="handleImages(event)"/>
-      </label>
+        <input type="file" id="imgInput" accept="image/*" multiple style="display:none;" onchange="handleImages(event)"/>
+      </div>
+      <input type="file" id="imgMore" accept="image/*" multiple style="display:none;" onchange="handleImages(event)"/>
       <div class="field-label">今天心情</div>
       <div class="mood-row">
         <button class="mood-btn" onclick="pickMood('😊',this)">😊</button>
@@ -443,11 +452,12 @@ input[type="date"].form-input{padding:8px 10px;font-size:13px;}
       <div class="saved-badge" id="savedBadge">✓ 已儲存！</div>
     </div>
   </div><!-- /diaryEditCard -->
-  <!-- 閱讀模式 -->
-  <div class="card" id="diaryReadCard" style="padding:0;overflow:hidden;margin-top:2px;display:none;">
+  </div><!-- /diary-collapsible -->
+  <!-- 閱讀模式：花卉背景卡片，在 collapsible 外面 -->
+  <div id="diaryReadCard" class="diary-read-card" style="display:none;">
+    <div class="diary-read-ruled"></div>
     <div id="diaryReadContent"></div>
   </div>
-  </div><!-- /diary-collapsible -->
 
   <!-- 過去的日記縮圖牆 -->
   <div class="diary-toggle-row" style="margin-top:6px;">
@@ -960,43 +970,49 @@ function goToToday() {
 }
 function showDiaryReadView() {
   var entry = appData.diaries[dk(diaryDate)];
-  if (!entry) return;
+  if (!entry) { showDiaryEditView(); return; }
   var dp = dk(diaryDate).split('-');
-  var dateStr = dp[0] + '年' + parseInt(dp[1]) + '月' + parseInt(dp[2]) + '日';
+  var mm = dp[1]; var dd = dp[2];
+  var dateStr = dp[0] + '/' + mm + '/' + dd + (entry.star ? '  ★' : '');
   // 照片
   var photoHtml = '';
   if (entry.images && entry.images.length) {
     var src = entry.images[0].driveUrl || entry.images[0].thumbUrl || entry.images[0].dataUrl || '';
-    if (src) photoHtml = '<img class="diary-read-photo" src="' + src + '">';
+    if (src) photoHtml = '<img src="' + src + '" style="width:100%;max-height:240px;object-fit:cover;display:block;">';
   }
-  // 三件重要的事
+  // 三件事
   var itemsHtml = '';
-  [entry.good1, entry.good2, entry.good3].forEach(function(t, i) {
-    if (t) itemsHtml += '<div class="diary-read-item"><span class="diary-read-item-num">' + (i+1) + '.</span><span>' + t + '</span></div>';
+  [entry.good1, entry.good2, entry.good3].forEach(function(t,i){
+    if(t) itemsHtml += '<div class="diary-read-item"><span class="diary-read-item-num">'+(i+1)+'.</span><span>'+t+'</span></div>';
   });
-  // 蓋章：根據心情選對應圖騰
-  var stamps = {'😊':'✦','🥰':'♡','😌':'✿','😔':'☁','😤':'⚡','🤯':'✸'};
-  var stamp = stamps[entry.mood] || '✦';
-  var html = photoHtml
-    + '<div class="diary-read-view">'
-    + '<div class="diary-read-mood">' + (entry.mood || '') + '</div>'
-    + '<div class="diary-read-date">' + dateStr + (entry.star ? ' 🌟' : '') + '</div>'
+  // 蓋章 SVG
+  var stampSvg = '<svg xmlns="http://www.w3.org/2000/svg" width="72" height="82" viewBox="0 0 72 82"><ellipse cx="36" cy="41" rx="33" ry="38" fill="#a8d4e0"/><ellipse cx="36" cy="41" rx="28" ry="32" fill="#b8dde8"/><ellipse cx="36" cy="41" rx="28" ry="32" fill="none" stroke="#7cb8cc" stroke-width="1.5" opacity="0.5"/><path d="M34 58 Q36 48 38 58" stroke="#8ab87a" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M36 30 Q36 44 36 58" stroke="#8ab87a" stroke-width="1.8" fill="none" stroke-linecap="round"/><path d="M36 46 Q28 40 27 34 Q33 36 36 46Z" fill="#9cc882"/><path d="M36 43 Q44 38 46 32 Q40 35 36 43Z" fill="#8ab87a"/><ellipse cx="36" cy="27" rx="4" ry="5" fill="#c8e8c0"/><circle cx="25" cy="50" r="3" fill="#f5f0d8"/><ellipse cx="25" cy="43.5" rx="2" ry="4" fill="white" transform="rotate(0,25,50)"/><ellipse cx="25" cy="43.5" rx="2" ry="4" fill="white" transform="rotate(45,25,50)"/><ellipse cx="25" cy="43.5" rx="2" ry="4" fill="white" transform="rotate(90,25,50)"/><ellipse cx="25" cy="43.5" rx="2" ry="4" fill="white" transform="rotate(135,25,50)"/><circle cx="25" cy="50" r="3.5" fill="#e8d870"/><circle cx="25" cy="50" r="2" fill="#d4c040"/><circle cx="47" cy="50" r="3" fill="#f5f0d8"/><ellipse cx="47" cy="43.5" rx="2" ry="4" fill="white" transform="rotate(0,47,50)"/><ellipse cx="47" cy="43.5" rx="2" ry="4" fill="white" transform="rotate(45,47,50)"/><ellipse cx="47" cy="43.5" rx="2" ry="4" fill="white" transform="rotate(90,47,50)"/><ellipse cx="47" cy="43.5" rx="2" ry="4" fill="white" transform="rotate(135,47,50)"/><circle cx="47" cy="50" r="3.5" fill="#e8d870"/><circle cx="47" cy="50" r="2" fill="#d4c040"/><ellipse cx="36" cy="37.5" rx="1.5" ry="3" fill="white" transform="rotate(0,36,41)"/><ellipse cx="36" cy="37.5" rx="1.5" ry="3" fill="white" transform="rotate(60,36,41)"/><ellipse cx="36" cy="37.5" rx="1.5" ry="3" fill="white" transform="rotate(120,36,41)"/><circle cx="36" cy="41" r="2.5" fill="#e8d870"/><circle cx="36" cy="41" r="1.5" fill="#d4c040"/><ellipse cx="22" cy="22" rx="8" ry="6" fill="white" opacity="0.18" transform="rotate(-15,22,22)"/></svg>';
+  var html = (photoHtml ? '<div class="diary-read-photo-wrap">' + photoHtml + '</div>' : '')
+    + '<div class="diary-read-body">'
+    + '<div class="diary-read-header">'
+    +   (entry.mood ? '<span class="diary-read-mood">' + entry.mood + '</span>' : '')
+    +   '<span class="diary-read-date">' + dateStr + '</span>'
+    + '</div>'
     + (itemsHtml ? '<div class="diary-read-section"><div class="diary-read-label">今日三件重要的事情</div><div class="diary-read-items">' + itemsHtml + '</div></div>' : '')
     + (entry.text ? '<div class="diary-read-section"><div class="diary-read-label">今日記錄</div><div class="diary-read-text">' + entry.text.replace(/</g,'&lt;') + '</div></div>' : '')
+    + '<div style="text-align:right;margin:16px 0 0;"><span class="diary-stamp">' + stampSvg + '</span></div>'
     + '<div class="diary-read-footer">'
-    +   '<div style="display:flex;gap:8px;align-items:center;">'
-    +   '<button class="diary-read-edit-btn" onclick="showDiaryEditView()">編輯</button>'
-    +   '<label class="diary-read-edit-btn" style="cursor:pointer;">加照片<input type="file" accept="image/*" multiple style="position:absolute;width:0;height:0;opacity:0;" onchange="handleImages(event)"/></label>'
-    +   '</div>'
-    +   '<span class="diary-stamp" style="margin-left:auto;"><svg xmlns="http://www.w3.org/2000/svg" width="72" height="82" viewBox="0 0 72 82"><ellipse cx="36" cy="41" rx="33" ry="38" fill="#a8d4e0" /><ellipse cx="36" cy="41" rx="28" ry="32" fill="#b8dde8" /><ellipse cx="36" cy="41" rx="28" ry="32" fill="none" stroke="#7cb8cc" stroke-width="1.5" opacity="0.5"/><path d="M34 58 Q36 48 38 58" stroke="#8ab87a" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M36 30 Q36 44 36 58" stroke="#8ab87a" stroke-width="1.8" fill="none" stroke-linecap="round"/><path d="M36 46 Q28 40 27 34 Q33 36 36 46Z" fill="#9cc882" /><path d="M36 43 Q44 38 46 32 Q40 35 36 43Z" fill="#8ab87a" /><ellipse cx="36" cy="27" rx="4" ry="5" fill="#c8e8c0" /><path d="M33 29 Q36 24 39 29" fill="#b8dda8" /><circle cx="25" cy="50" r="3" fill="#f5f0d8" /><ellipse cx="25" cy="43.5" rx="2" ry="4" fill="white" transform="rotate(0,25,50)"/><ellipse cx="25" cy="43.5" rx="2" ry="4" fill="white" transform="rotate(45,25,50)"/><ellipse cx="25" cy="43.5" rx="2" ry="4" fill="white" transform="rotate(90,25,50)"/><ellipse cx="25" cy="43.5" rx="2" ry="4" fill="white" transform="rotate(135,25,50)"/><circle cx="25" cy="50" r="3.5" fill="#e8d870" /><circle cx="25" cy="50" r="2" fill="#d4c040" /><circle cx="47" cy="50" r="3" fill="#f5f0d8" /><ellipse cx="47" cy="43.5" rx="2" ry="4" fill="white" transform="rotate(0,47,50)"/><ellipse cx="47" cy="43.5" rx="2" ry="4" fill="white" transform="rotate(45,47,50)"/><ellipse cx="47" cy="43.5" rx="2" ry="4" fill="white" transform="rotate(90,47,50)"/><ellipse cx="47" cy="43.5" rx="2" ry="4" fill="white" transform="rotate(135,47,50)"/><circle cx="47" cy="50" r="3.5" fill="#e8d870" /><circle cx="47" cy="50" r="2" fill="#d4c040" /><ellipse cx="36" cy="37.5" rx="1.5" ry="3" fill="white" transform="rotate(0,36,41)"/><ellipse cx="36" cy="37.5" rx="1.5" ry="3" fill="white" transform="rotate(60,36,41)"/><ellipse cx="36" cy="37.5" rx="1.5" ry="3" fill="white" transform="rotate(120,36,41)"/><circle cx="36" cy="41" r="2.5" fill="#e8d870" /><circle cx="36" cy="41" r="1.5" fill="#d4c040" /><ellipse cx="22" cy="22" rx="8" ry="6" fill="white" opacity="0.18" transform="rotate(-15,22,22)"/></svg></span>'
-    + '</div></div>';
+    +   '<button class="diary-read-edit-btn btn-edit" onclick="showDiaryEditView()">✏️ 編輯</button>'
+    +   '<button id="deleteDiaryBtn" class="diary-read-edit-btn btn-del" onclick="deleteDiary()">刪除</button>'
+    + '</div>'
+    + '</div>';
   document.getElementById('diaryReadContent').innerHTML = html;
-  document.getElementById('diaryEditCard').style.display = 'none';
+  // 顯示閱讀卡片，摺疊編輯區
   document.getElementById('diaryReadCard').style.display = 'block';
+  document.getElementById('diaryFormCollapse').style.maxHeight = '0';
+  document.getElementById('diaryFormCollapse').style.opacity = '0';
+  document.getElementById('diaryFormArrow').classList.remove('open');
 }
 function showDiaryEditView() {
   document.getElementById('diaryReadCard').style.display = 'none';
-  document.getElementById('diaryEditCard').style.display = 'block';
+  document.getElementById('diaryFormCollapse').style.maxHeight = '2000px';
+  document.getElementById('diaryFormCollapse').style.opacity = '1';
+  document.getElementById('diaryFormArrow').classList.add('open');
 }
 function toggleForm(id) { document.getElementById(id).classList.toggle('open'); }
 
@@ -1439,7 +1455,7 @@ function loadDiaryUI() {
   renderPhotoStrip();
   renderDiaryList();
   updateBottomBar();
-  // 有資料則預設顯示閱讀模式，空白則編輯模式
+  // 有資料→閱讀模式，空白→編輯模式
   if (entry) { showDiaryReadView(); } else { showDiaryEditView(); }
 }
 // ── 共用：開啟/關閉 overlay modal ────────────
@@ -1638,6 +1654,10 @@ function renderPhotoStrip() {
 
 function setPhoto(i) { curPhotoIdx = i; renderPhotoStrip(); }
 
+function photoMenuAdd() {
+  closePhotoMenu();
+  document.getElementById('imgMore').click();
+}
 function togglePhotoMenu() {
   var pop = document.getElementById('photoMenuPop');
   pop.style.display = pop.style.display === 'none' ? 'block' : 'none';
@@ -1721,9 +1741,7 @@ function saveDiaryAuto() {
   appData.diaries[dk(diaryDate)].savedAt = Date.now();
   save();
   renderDiaryList();
-  // 如果目前是閱讀模式，刷新顯示
-  var readCard = document.getElementById('diaryReadCard');
-  if (readCard && readCard.style.display !== 'none') showDiaryReadView();
+
   // 同時更新編輯模式的 photoStrip
   renderPhotoStrip();
 }
@@ -1748,8 +1766,7 @@ function saveDiary() {
   var b = document.getElementById('savedBadge');
   b.classList.add('show'); setTimeout(function(){ b.classList.remove('show'); }, 1500);
   renderDiaryList(); updateBottomBar();
-  // 儲存後切到閱讀模式
-  setTimeout(function(){ showDiaryReadView(); }, 400);
+  setTimeout(function(){ showDiaryReadView(); }, 700);
 }
 function toggleDiaryForm() {
   var collapse = document.getElementById('diaryFormCollapse');
